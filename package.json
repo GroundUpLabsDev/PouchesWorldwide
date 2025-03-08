@@ -1,0 +1,39 @@
+{
+  "name": "ecommerce-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@stripe/react-stripe-js": "^3.1.1",
+    "@stripe/stripe-js": "^5.6.0",
+    "axios": "^1.7.9",
+    "daisyui": "^4.12.23",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
+    "fs-extra": "^11.3.0",
+    "js-cookie": "^3.0.5",
+    "lucide-react": "^0.473.0",
+    "next": "15.1.4",
+    "nodemailer": "^6.10.0",
+    "pg": "^8.13.3",
+    "react": "^19.0.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "stripe": "^17.6.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
+  }
+}
