@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.aanimate-scroll {
+  animation: scroll 1000s linear infinite;
+}
+
+@layer utilities {
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%); /* Move the full width of the container */
+    }
+  }
+
+  .animate-scroll {
+    display: flex;
+    animation: scroll 10s linear infinite; /* You can adjust the speed here */
+  }
+}
+
+/* Hide Next.js Static Route Icon */
+[data-next-route-announcer] {
+  display: none !important;
+}
+
+/* Tailwind Example */
+.transition-all {
+  transition: all 0.5s ease-in-out;
+}
+
+.scale-95 {
+  transform: scale(0.95);
+}
+
+.blur-sm {
+  filter: blur(2px);
+}
+
+.opacity-60 {
+  opacity: 0.6;
+}
+
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
