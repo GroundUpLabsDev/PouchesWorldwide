@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import ReferralTab from "@/components/AdminUi/ReferralTab";
 
-
 export default function ReferralPage({ userId }) {
   const [username, setUsername] = useState("");
 
   useEffect(() => { 
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://146.190.245.42:1337/api/users");
+        const response = await fetch("https://pouchesworldwide.com/strapi/api/users");
         const users = await response.json();
 
         // Find the user by userId
@@ -27,31 +26,24 @@ export default function ReferralPage({ userId }) {
       }
     };
 
-
-
-
     fetchUserData();
   }, [userId]);
 
-    return (
-      <>
+  return (
+    <>
       <div className="mx-auto max-w-6xl">
         <div className="h-[30px] px-2.5 py-[3px] bg-black flex items-center gap-2.5 mb-2 w-[200px]">
-  <div className="text-white text-base font-normal font-['Poppins'] capitalize ">
-  wholesaler account
-  </div>
-</div>
+          <div className="text-white text-base font-normal font-['Poppins'] capitalize">
+            wholesaler account
+          </div>
+        </div>
         <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize mb-8">
-        <span className="text-black">{username}'s   Referral Earnings</span> 
-      </h2></div>
-        < ReferralTab />
-
-        
-
-
-
-        </>
+          <span className="text-black">{username}'s Referral Earnings</span> 
+        </h2>
+      </div>
       
-    );
-  }
-  
+      {/* Pass userId to ReferralTab */}
+      <ReferralTab userId={userId} />
+    </>
+  );
+}

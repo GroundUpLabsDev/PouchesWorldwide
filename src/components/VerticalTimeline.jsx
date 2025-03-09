@@ -31,8 +31,8 @@ const VerticalTimeline = ({ timeline = [] }) => {
   const yellowLineHeight = inProgressIndex !== -1 ? `${(inProgressIndex + 1) * 80}px` : '0px';
 
   return (
-    <div className="bg-white p-6 rounded-lg w-full max-w-md h-[565px]">
-      <h2 className="text-black text-lg font-medium font-['Poppins'] pb-4">Order History</h2>
+    <div className="bg-white pr-6 pb-6 pl-6 rounded-lg w-full max-w-md h-[565px]">
+      <h2 className="text-black text-xl font-medium pb-4 mb-4">Order History</h2>
       <div className="relative">
         {/* Gray line for the entire timeline */}
         <div className="absolute h-full border border-gray-300 left-4 top-0"></div>

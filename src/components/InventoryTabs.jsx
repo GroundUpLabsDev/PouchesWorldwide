@@ -3,6 +3,7 @@ import { useState } from "react";
 import StockPage from "../app/inventory/stock/page";
 import OrdersPage from "../app/inventory/order/page";
 import EarningsPage from "../app/inventory/earnings/page";
+import ReferralPage from "../app/inventory/referral/page";
 
 export default function InventoryTabs() {
   const [activeTab, setActiveTab] = useState("stock");
@@ -13,7 +14,7 @@ export default function InventoryTabs() {
         {/* Tabs */}
         <div className="flex justify-center mb-6">
           <div className="h-14 px-2 py-[7px] bg-[#ececec] rounded-[9px] flex justify-center items-center gap-6">
-            {["stock", "orders", "earnings"].map((tab) => (
+            {["stock", "referral", "orders", "earnings"].map((tab) => (
               <button
                 key={tab}
                 className={`px-4 py-2 rounded-md transition ${
@@ -30,6 +31,7 @@ export default function InventoryTabs() {
         {/* Render Pages */}
         <div className="p-4">
           {activeTab === "stock" && <StockPage />}
+          {activeTab === "referral" && <ReferralPage />}
           {activeTab === "orders" && <OrdersPage />}
           {activeTab === "earnings" && <EarningsPage />}
         </div>

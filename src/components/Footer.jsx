@@ -1,118 +1,70 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Facebook, Twitter, Instagram } from "lucide-react";
 
 const Footer = () => {
-  const flavours = [
-    'Cool Mint',
-    'Wintergreen',
-    'Peppermint'
-  ];
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
-  const brands = ['Zyn', 'Velo', 'ANGLE'];
-
-  const contacts = [
-    'Zyn.Service@Gmai.Com',
-    '+998 6789 4564',
-    '+987 1234 6754'
-  ];
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   return (
-    <footer className="bg-black text-white py-8">
-  <div className="container mx-auto px-4">
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-20 items-center text-center sm:text-left">
-      {/* Logo and Description Column */}
-      <div className="col-span-1 sm:col-span-2 md:col-span-1 flex flex-col items-center sm:items-start">
-        <Link href="/" className="mb-4 block">
-          <Image 
-            src="/logo.png" 
-            alt="Pouches Worldwide" 
-            width={150}
-            height={32}
-            className="h-8 w-auto"
-          />
-        </Link>
-        <p className="text-sm leading-relaxed mb-4">
-          Step Into The Innovative World Of Zyn,  
-          Where Every Product Is Crafted For  
-          Convenience And Every Moment Is  
-          Tailored For Satisfaction.
-        </p>
-      </div>
+    <footer className="bg-black text-gray-300 py-8">
+      <div className="container mx-auto px-6 md:px-10">
+        {/* Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start text-sm text-center md:text-left">
+          {/* Logo & Description */}
+          <div className="md:col-span-2 flex flex-col items-center md:items-start">
+            <Link href="/" className="mb-3 block">
+              <Image src="/logo.png" alt="Company Logo" width={100} height={100} className="h-auto w-auto" />
+            </Link>
+            <p className="max-w-xs md:max-w-sm leading-relaxed text-gray-400">
+              Your trusted destination for premium nicotine and energy pouches. Proudly offering Blue Giant, and our exclusive PUXX brand.
+            </p>
+            <div className="mt-4">
+              <Image src="/card.webp" alt="Payment Methods" width={200} height={40} draggable={false} className="h-auto w-auto" />
+            </div>
+          </div>
 
-      {/* Flavours Column */}
-      <div className="col-span-1 sm:col-span-2 md:col-span-1">
-        <h3 className="text-[#fab12f] font-medium mb-2">Flavours</h3>
-        <ul className="space-y-1">
-          {flavours.map((flavor) => (
-            <li 
-              key={flavor}
-              className="text-sm cursor-pointer transition-colors duration-200 hover:text-gray-300"
-            >
-              <Link href={`/flavours/${flavor.toLowerCase().replace(' ', '-')}`}>
-                {flavor}
-              </Link>
-            </li>
+          {/* Links Sections */}
+          {[
+            { title: "Flavors", items: ["Mint", "Peppermint", "Cool Mint", "God Mint", "Blueberry", "Mango", "Cola", "Spearmint", "Watermelon", "Cherry"] },
+            { title: "Brands", items: ["PUXX", "BLUE GIANT"], link: "/brands" },
+            { title: "Legal", items: [{ name: "Terms and Conditions", link: "/terms" }, { name: "Refund Policy", link: "/privacy" }, { name: "Privacy Policy", link: "/privacy" }] },
+            { title: "Contacts", items: [{ name: "support@pouchesworldwide.com", link: "mailto:support@pouchesworldwide.com" }] },
+          ].map((section, index) => (
+            <div key={index}>
+              <h3 className="text-white font-medium mb-2">{section.title}</h3>
+              <ul className="space-y-1">
+                {section.items.map((item, idx) => (
+                  <li key={idx}>
+                    <Link href={typeof item === "string" ? "/" : item.link} className="hover:text-white">
+                      {typeof item === "string" ? item : item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
+
+        {/* Social Icons */}
+        <div className="flex justify-center space-x-4 mt-8">
+          <Link href="#" className="hover:text-white"><Facebook size={20} /></Link>
+          <Link href="#" className="hover:text-white"><Twitter size={20} /></Link>
+          <Link href="#" className="hover:text-white"><Instagram size={20} /></Link>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-6 text-center text-gray-500">
+          <p>© {currentYear} Pouches Worldwide. All Rights Reserved.</p>
+        </div>
       </div>
-
-      {/* Brands Column */}
-      <div className="col-span-1 sm:col-span-2 md:col-span-1">
-        <h3 className="text-[#fab12f] font-medium mb-2">Brands</h3>
-        <ul className="space-y-1">
-          {brands.map((brand) => (
-            <li 
-              key={brand}
-              className="text-sm cursor-pointer transition-colors duration-200 hover:text-gray-300"
-            >
-              <Link href={`/brands/${brand.toLowerCase()}`}>
-                {brand}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Contacts Column */}
-      <div className="col-span-1 sm:col-span-2 md:col-span-1">
-        <h3 className="text-[#fab12f] font-medium mb-2">Contacts</h3>
-        <ul className="space-y-1">
-          {contacts.map((contact) => (
-            <li 
-              key={contact}
-              className="text-sm"
-            >
-              {contact.includes('@') ? (
-                <a 
-                  href={`mailto:${contact}`}
-                  className="hover:text-gray-300 transition-colors duration-200"
-                >
-                  {contact}
-                </a>
-              ) : (
-                <a 
-                  href={`tel:${contact.replace(/\s+/g, '')}`}
-                  className="hover:text-gray-300 transition-colors duration-200"
-                >
-                  {contact}
-                </a>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-
-    {/* Copyright */}
-    <div className="mt-8 pt-4 text-center">
-      <p className="text-sm text-gray-400">
-        © {new Date().getFullYear()} Zyn. All Rights Reserved.
-      </p>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   );
 };
 

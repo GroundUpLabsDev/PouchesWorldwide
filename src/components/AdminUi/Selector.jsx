@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CircleX } from "lucide-react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -57,15 +57,44 @@ const DraggableCard = ({ card, index, moveCard, handleDeleteCard, selectedCard, 
   );
 };
 
-const Selector = () => {
+const Selector = ({ onChange, ProductID }) => {
   const [selectedCard, setSelectedCard] = useState(null);
-  const [cards, setCards] = useState([
-    { id: 0, cans: "15 Cans", price: "7.50$" },
-    { id: 1, cans: "30 Cans", price: "14.50$", bestDeal: true },
-    { id: 2, cans: "60 Cans", price: "28.50$" },
-    { id: 3, cans: "90 Cans", price: "42.50$" },
-  ]);
+  const [cards, setCards] = useState([]);
   const [newCardData, setNewCardData] = useState({ cans: "", price: "", bestDeal: false });
+
+  // Fetch data from the API when the component mounts or when ProductID changes
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `https://pouchesworldwide.com/strapi/api/products?filters[id][$eq]=${ProductID}&populate[Selector][populate]=*`
+        );
+        const data = await response.json();
+
+        if (data.data && data.data.length > 0) {
+          const selectorData = data.data[0].Selector;
+          const transformedCards = selectorData.map((item) => ({
+            id: item.id,
+            cans: `${item.Cans} Cans`,
+            price: `${item.Price}$`,
+            bestDeal: item.BestDeal,
+          }));
+          setCards(transformedCards);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [ProductID]);
+
+  // Notify parent component (AdminDashboard) of changes
+  useEffect(() => {
+    if (onChange) {
+      onChange({ selectedCard, cards });
+    }
+  }, [selectedCard, cards, onChange]);
 
   const moveCard = (fromIndex, toIndex) => {
     const updatedCards = [...cards];
@@ -162,7 +191,7 @@ const Selector = () => {
                 onChange={handleInputChange}
               />
               <label htmlFor="bestDeal" className="text-sm font-medium text-gray-700">
-                Is Best Deal?
+                Is Best Deal? {ProductID}
               </label>
             </div>
             <button className="bg-teal-500 text-white font-medium py-2 px-4 rounded-md h-[70px] w-[126px]" onClick={handleSubmitNewCard}>

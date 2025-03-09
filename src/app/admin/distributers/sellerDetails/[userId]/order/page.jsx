@@ -1,5 +1,5 @@
-
 "use client";
+
 import React, { useEffect, useState } from "react";
 import OrderCard from "@/components/AdminUi/OrderCard";
 import { ListFilter } from "lucide-react";
@@ -51,7 +51,7 @@ export default function OrderPage({ userId }) {
   useEffect(() => { 
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://146.190.245.42:1337/api/users");
+        const response = await fetch("https://pouchesworldwide.com/strapi/api/users");
         const users = await response.json();
 
         // Find the user by userId

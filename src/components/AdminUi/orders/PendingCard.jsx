@@ -13,7 +13,7 @@ const PendingCard = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get("http://146.190.245.42:1337/api/all-orders?populate=*");
+        const response = await axios.get("https://pouchesworldwide.com/strapi/api/all-orders?populate=*");
         console.log("Fetched orders:", response.data); // Log to check the structure
         // Ensure that the response data is an array before setting the state
         if (Array.isArray(response.data.data)) {
@@ -41,7 +41,7 @@ const PendingCard = () => {
           <div key={index} className="bg-white rounded-lg border border-zinc-500 p-4 w-[720px] h-[440px] grid grid-cols-4">
             {/* Product Image */}
             <div className="col-span-1 flex items-center justify-center bg-[#ececec] rounded-lg w-[150px] h-[150px]">
-              <img src={`http://146.190.245.42:1337${order.productImage?.url || '/2.png'}`} alt={`Product of ${order.productName[0]?.Name}`} className="w-24 h-24 rounded-lg" />
+              <img src={`${order.cart[0].imageUrl ||  '/2.png'}`} alt={`Product of ${order.productName[0]?.Name}`} className="w-24 h-24 rounded-lg" />
             </div>
 
             {/* Order Details */}
@@ -116,8 +116,8 @@ const PendingCard = () => {
       ? order.productName[0]?.price 
       : order.cart.length > 1 
         ? "Multiple" 
-        : order.productName[0]?.price}
- $</p>
+        :  `${order.productName[0]?.price} $`}
+ </p>
               </div>
             </div>
 

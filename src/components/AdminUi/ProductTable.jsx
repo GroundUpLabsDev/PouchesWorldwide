@@ -6,7 +6,7 @@ import { Trash, Search, Plus } from 'lucide-react';
 // Function to fetch products from the API
 const fetchProducts = async () => {
   try {
-    const res = await fetch('http://146.190.245.42:1337/api/products?populate=*');
+    const res = await fetch('https://pouchesworldwide.com/strapi/api/products?populate=*');
     if (!res.ok) {
       throw new Error('Network response was not ok');
     }
@@ -18,30 +18,76 @@ const fetchProducts = async () => {
   }
 };
 
+// Function to update the retailers property using documentId
+const updateRetailers = async (documentId, retailers) => {
+  try {
+    const res = await fetch(`https://pouchesworldwide.com/strapi/api/products/${documentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: { retailers } }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to update product');
+    }
+
+    const updatedProduct = await res.json();
+    return updatedProduct;
+  } catch (error) {
+    console.error('Error updating product:', error);
+    return null;
+  }
+};
+
 const ProductTable = ({ onCreateOrderClick }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState([]);
+  const [toggleStates, setToggleStates] = useState({});
 
   // Fetch API data on component mount
   useEffect(() => {
     const loadProducts = async () => {
       const products = await fetchProducts();
       setData(products);
+
+      // Initialize toggle states based on the retailers property
+      const initialToggles = products.reduce((acc, product) => {
+        acc[product.documentId] = product.retailers || false; // Use documentId as the key
+        return acc;
+      }, {});
+      setToggleStates(initialToggles);
     };
     loadProducts();
   }, []);
 
+  // Toggle function
+  const handleToggle = async (documentId) => {
+    const newToggleState = !toggleStates[documentId];
+    setToggleStates((prevStates) => ({
+      ...prevStates,
+      [documentId]: newToggleState,
+    }));
+
+    // Send PUT request to update the retailers property using documentId
+    const updatedProduct = await updateRetailers(documentId, newToggleState);
+    if (updatedProduct) {
+      console.log('Product updated successfully:', updatedProduct);
+    }
+  };
+
   // Map API data properties to match table fields
-  const mappedData = data.map((item) => {
-    return {
-      id: item.id,
-      product: item.Name?.trim() || "No Name",
-      flavour: item.category?.Name?.trim() || "Uncategorized",
-      stock: item.Stock,
-      unitPrice: item.price, 
-      img: item.Image?.formats?.medium?.url
-    };
-  });
+  const mappedData = data.map((item) => ({
+    id: item.id,
+    documentId: item.documentId, // Ensure documentId is included
+    product: item.Name?.trim() || "No Name",
+    flavour: item.category?.Name?.trim() || "Uncategorized",
+    stock: item.Stock,
+    unitPrice: item.price,
+    img: item.Image?.formats?.medium?.url,
+    retailers: item.retailers || false, // Ensure retailers property is included
+  }));
 
   // Filter data based on search term on product name
   const filteredData = mappedData.filter((item) =>
@@ -57,25 +103,24 @@ const ProductTable = ({ onCreateOrderClick }) => {
   // Delete functionality
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://146.190.245.42:1337/api/products/${id}`, {
+      const res = await fetch(`https://pouchesworldwide.com/strapi/api/products/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!res.ok) {
         throw new Error('Failed to delete product');
       }
-  
-      // Re-fetch products after deletion to ensure data is up-to-date
+
+      // Re-fetch products after deletion
       const products = await fetchProducts();
-      setData(products);  // Update the state with the fresh product list
+      setData(products);
     } catch (error) {
       console.error('Error deleting product:', error);
     }
   };
-  
 
   return (
     <>
@@ -109,6 +154,7 @@ const ProductTable = ({ onCreateOrderClick }) => {
               </th>
               <th>Unit Price</th>
               <th>Stock</th>
+              <th>Retailer Mode</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -130,12 +176,12 @@ const ProductTable = ({ onCreateOrderClick }) => {
                     <div className="flex items-center gap-3">
                       <div className="w-16 h-16 rounded overflow-hidden bg-[#ececec]">
                         <img
-                          src={`http://146.190.245.42:1337${row.img}`}
+                          src={`https://pouchesworldwide.com/strapi${row.img}`}
                           alt={row.product}
                           className="w-[64px] h-[64px] object-cover"
                         />
                       </div>
-                      <Link href={`/admin/Products/Details?ProductID=${row.id}`} passHref>
+                      <Link href={`/admin/Products/Edit?ProductID=${row.id}`} passHref>
                         <div className="text-[#3f6075] text-lg font-medium font-['Poppins'] capitalize cursor-pointer">
                           {row.product}
                         </div>
@@ -150,13 +196,24 @@ const ProductTable = ({ onCreateOrderClick }) => {
                     {row.stock}
                   </td>
                   <td style={{ width: "150px" }}>
-                    {/* Direct Delete Button */}
+                    {/* Toggle Button */}
                     <button
-    onClick={() => handleDelete(row.id)} // Call the handleDelete directly here
-    className="bg-red-600 text-white p-2 rounded"
-  >
-    <Trash className="w-5 h-5" />
-  </button>
+                      onClick={() => handleToggle(row.documentId)} // Use documentId here
+                      className={`px-4 py-2 rounded ${
+                        toggleStates[row.documentId] ? "bg-green-500" : "bg-gray-500"
+                      } text-white`}
+                    >
+                      {toggleStates[row.documentId] ? "ON" : "OFF"}
+                    </button>
+                  </td>
+                  <td style={{ width: "150px" }}>
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => handleDelete(row.id)}
+                      className="bg-red-600 text-white p-2 rounded"
+                    >
+                      <Trash className="w-5 h-5" />
+                    </button>
                   </td>
                 </tr>
               ));

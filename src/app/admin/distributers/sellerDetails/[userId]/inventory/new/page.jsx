@@ -1,12 +1,7 @@
-
-
 'use client';
-import Header from "@/components/AdminUi/Header";
-import Banner from "@/components/Banner";
-import Footer from "@/components/Footer";
 import { useState, useEffect } from 'react';
- 
-const AddToInventory = () => {
+
+const AddToInventory = ({ userId }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -15,14 +10,22 @@ const AddToInventory = () => {
   const [quantity, setQuantity] = useState('');
 
   useEffect(() => {
-    // Mock data for now, replace with API call
-    const mockProducts = [
-      { id: 1, name: 'Zyn Smooth 345', price: 10 },
-      { id: 2, name: 'Vjva Seuama', price: 15 },
-      { id: 3, name: 'Zyn 345', price: 12 },
-      { id: 4, name: 'Zyn Kljjk 345', price: 14 },
-    ];
-    setProducts(mockProducts);
+    // Fetch products from API
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('https://pouchesworldwide.com/strapi/api/products'); // Replace with actual API endpoint
+        const data = await response.json();
+        setProducts(data.data.map(product => ({
+          id: product.id,
+          name: product.Name,
+          price: product.price,
+        })));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   useEffect(() => {
@@ -49,18 +52,16 @@ const AddToInventory = () => {
   };
 
   return (
-    <>
-    <Header />
-    <Banner />
     <div className="container mx-auto p-8 bg-white font-roboto">
-    <div className="h-[30px] px-2.5 py-[3px] bg-black flex items-center gap-2.5 mb-2 w-[200px]">
-  <div className="text-white text-base font-normal font-['Poppins'] capitalize">
-  distributor account
-  </div>
-</div>
-        <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize mb-8">
+      <div className="h-[30px] px-2.5 py-[3px] bg-black flex items-center gap-2.5 mb-2 w-[200px]">
+        <div className="text-white text-base font-normal font-['Poppins'] capitalize">
+          distributor account
+        </div>
+      </div>
+      <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize mb-8">
         see <span className="text-black">'s Inventory</span>
       </h2>
+      <p>User ID: {userId}</p>
       <div className="flex">
         <div className="w-1/3 relative">
           <input
@@ -86,16 +87,6 @@ const AddToInventory = () => {
         </div>
         <div className="w-2/3 pl-8">
           <div className="mb-4">
-            <label className="block text-gray-600 mb-2">Product Price</label>
-            <input
-              type="text"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="Product price"
-              className="w-full p-2 border rounded"
-            />
-          </div>
-          <div className="mb-4">
             <label className="block text-gray-600 mb-2">Product Quantity</label>
             <input
               type="text"
@@ -114,8 +105,6 @@ const AddToInventory = () => {
         </div>
       </div>
     </div>
-    <Footer />
-    </>
   );
 };
 

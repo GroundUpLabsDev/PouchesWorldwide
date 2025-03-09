@@ -10,7 +10,7 @@ export default function Wholesellers() {
     // Fetch data from the API
     const fetchData = async () => {
       try {
-        const response = await fetch("http://146.190.245.42:1337/api/users");
+        const response = await fetch("https://pouchesworldwide.com/strapi/api/users");
         const data = await response.json();
 
         // Filter data for wholesaler users who are confirmed and not blocked

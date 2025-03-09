@@ -1,4 +1,4 @@
-
+"use client";
 
 import ListTable from "@/components/AdminUi/ListTable";
 

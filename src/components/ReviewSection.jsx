@@ -13,23 +13,24 @@ export default function ReviewSection() {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
-
+  
     const reviewData = {
       data: {
         name,
         feedback,
+        rating, // Include the rating number
       },
     };
-
+  
     try {
-      const response = await fetch("http://146.190.245.42:1337/api/reviews", {
+      const response = await fetch("https://pouchesworldwide.com/strapi/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(reviewData),
       });
-
+  
       if (response.ok) {
         setSuccess(true);
         setName("");
@@ -44,6 +45,7 @@ export default function ReviewSection() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="w-full bg-black flex items-center justify-center p-4 font-[Poppins]">

@@ -1,38 +1,41 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import useCartStore from "@/store/cartStore";
 
-
-
-export default function OrderRequestDetails({ product, totalPrice, noProducts, removeProduct }) {
+export default function OrderRequestDetails({ product, noProducts, removeProduct, updateTotalPrice }) {
   const router = useRouter();
   const addCustomOrder = useCartStore((state) => state.addCustomOrder);
 
   const imageUrl = product.Image?.formats?.medium?.url || product.Image?.url || '/4.png'; 
-  const handleRemove = () => {
-    removeCustomOrder(product.id); // Remove the product by its ID
-  };
+
   const [customNoProducts, setCustomNoProducts] = useState(noProducts);
   const [customPrice, setCustomPrice] = useState(product.price);
 
+  // Optimized total price calculation
+  const calculatedTotalPrice = useMemo(() => {
+    return Math.max(0, customNoProducts * customPrice);
+  }, [customNoProducts, customPrice]);
 
-
-  
-
-  const calculateTotalPrice = () => {
-    return customNoProducts * customPrice;
-  };
+  // Send total price, customNoProducts, and customPrice to parent component
+  useEffect(() => {
+    updateTotalPrice(product.id, calculatedTotalPrice, customNoProducts, customPrice);
+  }, [calculatedTotalPrice, customNoProducts, customPrice]);
 
   const handleRequestSubmit = () => {
+    if (customNoProducts <= 0 || customPrice <= 0) {
+      alert("Quantity and price must be greater than zero.");
+      return;
+    }
+
     const customOrder = {
       id: Date.now(),
-      product: product,
+      product,
       quantity: customNoProducts,
       requestedPrice: customPrice,
-      totalAmount: calculateTotalPrice(),
+      totalAmount: calculatedTotalPrice,
       status: 'pending'
     };
     
@@ -40,17 +43,14 @@ export default function OrderRequestDetails({ product, totalPrice, noProducts, r
     router.push('/cart');
   };
 
-
-
   return (
     <div className="flex flex-col items-center mb-6">
       {/* Card */}
       <div className="h-[218px] w-[871px] relative bg-white rounded-[10px] border border-[#adb5bd]/40">
         {/* Product Image */}
         <div className="w-[197px] h-[197px] left-[9px] top-[10px] absolute">
-          <div className="w-[197px] h-[197px] left-0 top-0 absolute bg-white rounded-[5px]"></div>
           <Image
-            src={`http://146.190.245.42:1337${imageUrl}`}
+            src={`https://pouchesworldwide.com/strapi${imageUrl}`}
             alt={product.Name}
             width={141}
             height={146}
@@ -59,75 +59,53 @@ export default function OrderRequestDetails({ product, totalPrice, noProducts, r
         </div>
 
         {/* Product Name */}
-        <div className="left-[226px] top-[10px] absolute text-black text-sm font-normal font-['Poppins'] capitalize">
-          product name
-        </div>
-        <div className="left-[225px] top-[26px] absolute text-center text-black text-[22px] font-medium font-['Poppins'] capitalize">
+        <div className="left-[226px] top-[26px] absolute text-center text-black text-[22px] font-medium capitalize">
           {product.Name}
         </div>
 
         {/* Product Details */}
-        <div className="left-[226px] top-[75px] absolute text-[#2f4858] text-base font-medium font-['Poppins'] leading-snug">
+        <div className="left-[226px] top-[75px] absolute text-[#2f4858] text-base font-medium">
           12mg | 15 pouches
         </div>
 
         {/* Number of Products and Price */}
-        <div className="left-[224px] top-[124px] absolute justify-start items-center gap-[19px] inline-flex">
+        <div className="left-[224px] top-[124px] absolute flex gap-[19px]">
           {/* Number of Products */}
-          <div className="w-[216px] flex-col justify-start items-start gap-2 inline-flex">
-            <div className="self-stretch h-[18px] flex-col justify-start items-start flex">
-              <div className="self-stretch text-zinc-500 text-[15px] font-['Inter'] font-semibold leading-[18px]">
-                Number of Products
-              </div>
-            </div>
-            <div className="self-stretch h-[54px] p-3 bg-white rounded-md border border-zinc-200 justify-start items-center gap-2 inline-flex overflow-hidden">
-              <input
-                type="number"
-                value={customNoProducts}
-                onChange={(e) => setCustomNoProducts(Number(e.target.value))}
-                className="grow shrink basis-0 text-zinc-500 text-xl font-normal font-['Inter'] leading-7 outline-none"
-              />
-            </div>
+          <div className="w-[216px] flex flex-col gap-2">
+            <div className="text-zinc-500 text-[15px] font-semibold">Number of Products</div>
+            <input
+              type="number"
+              value={customNoProducts}
+              onChange={(e) => setCustomNoProducts(Math.max(1, Number(e.target.value)))}
+              className="w-full h-[54px] p-3 bg-white rounded-md border border-zinc-200 text-xl outline-none"
+            />
           </div>
 
           {/* Multiplication Sign */}
-          <div className="w-3 h-20 pt-[22px] flex-col justify-center items-center gap-2.5 inline-flex">
-            <div className="self-stretch text-black text-lg font-normal font-['Inter'] leading-[25.20px]">
-              X
-            </div>
-          </div>
+          <div className="w-3 h-20 pt-[22px] flex items-center justify-center text-lg">X</div>
 
           {/* Price for a Product */}
-          <div className="w-[216px] flex-col justify-start items-start gap-2 inline-flex">
-            <div className="self-stretch h-[18px] flex-col justify-start items-start flex">
-              <div className="self-stretch text-zinc-500 text-[15px] font-semibold font-['Inter'] leading-[18px]">
-                Price for a Product
-              </div>
-            </div>
-            <div className="self-stretch h-[54px] p-3 bg-white rounded-md border border-zinc-200 justify-start items-center gap-2 inline-flex overflow-hidden">
-              <div className="flex items-center gap-1">
-                <span className="text-[#3f6075] text-xl font-semibold font-['Poppins'] leading-7">
-                  $
-                </span>
-                <input
-                  type="number"
-                  value={customPrice}
-                  onChange={(e) => setCustomPrice(Number(e.target.value))}
-                  className="text-zinc-500 text-xl font-normal font-['Inter'] leading-7 outline-none w-full"
-                  disabled
-                />
-              </div>
+          <div className="w-[216px] flex flex-col gap-2">
+            <div className="text-zinc-500 text-[15px] font-semibold">Price for a Product</div>
+            <div className="w-full h-[54px] p-3 bg-white rounded-md border border-zinc-200 flex items-center gap-1">
+              <span className="text-[#3f6075] text-xl font-semibold">$</span>
+              <input
+                type="number"
+                value={customPrice}
+                onChange={(e) => setCustomPrice(Math.max(1, Number(e.target.value)))}
+                className="text-zinc-500 text-xl outline-none w-full"
+              />
             </div>
           </div>
         </div>
 
         {/* Total Price */}
-        <div className="left-[720px] top-[157px] absolute text-[#2f4858] text-[32px] font-medium font-['Poppins'] leading-[44.80px] overflow-x-auto whitespace-nowrap">
-        ${calculateTotalPrice().toFixed(2)}
+        <div className="left-[720px] top-[157px] absolute text-[#2f4858] text-[32px] font-medium">
+          ${calculatedTotalPrice.toFixed(2)}
         </div>
 
         {/* Rating Stars */}
-        <div className="left-[600px] top-[10px] absolute justify-center items-center">
+        <div className="left-[600px] top-[10px] absolute">
           <div className="rating">
             {[...Array(5)].map((_, index) => (
               <input
@@ -144,17 +122,14 @@ export default function OrderRequestDetails({ product, totalPrice, noProducts, r
 
         {/* Remove Button */}
         <div
-          className="px-5 py-2.5 left-[756px] top-[10px] absolute bg-[#e22d6e]/10 rounded-[11px] justify-center items-center gap-2.5 inline-flex cursor-pointer"
-          onClick={removeProduct}// Attach the remove function
+          className="px-5 py-2.5 left-[756px] top-[10px] absolute bg-[#e22d6e]/10 rounded-[11px] cursor-pointer"
+          onClick={() => removeProduct(product.id)}
         >
-          <div className="text-center text-[#e22d6e] text-[15px] font-medium font-['Poppins'] capitalize">
+          <div className="text-center text-[#e22d6e] text-[15px] font-medium capitalize">
             remove
           </div>
         </div>
       </div>
-      
-
-
     </div>
   );
 }

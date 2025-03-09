@@ -7,10 +7,11 @@ const SellerTable = ({ data }) => {
 
   const filteredData = data.filter(
     (item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.email.toLowerCase().includes(search.toLowerCase()) ||
-      item.mobile.includes(search)
+      (item?.username?.toLowerCase() || "").includes(search.toLowerCase()) ||
+      (item?.email?.toLowerCase() || "").includes(search.toLowerCase()) ||
+      (item?.mobile || "").includes(search)
   );
+  
 
   return (
     <div className="w-full mx-auto p-2">
@@ -26,13 +27,14 @@ const SellerTable = ({ data }) => {
                     <img className="w-[60px] h-[60px] rounded-full border-4 border-[#ffe047]" src="https://i.pravatar.cc/250?u=mail@ashallendesign.co.uk" />
                     <div>
                       <p className="text-[#3e5f75] text-base font-['Poppins']">Name</p>
-                      <p className="text-xl font-['Poppins'] capitalize">{item.name}</p>
+                      <p className="text-xl font-['Poppins'] capitalize">{item.username}</p>
                     </div>
                   </td>
-                  <td className="p-3">
-                    <p className="text-[#3e5f75] text-base font-['Poppins'] text-left ml-[100px] ">Email</p>
-                    <p className="text-xl font-['Poppins'] text-right ">{item.email}</p>
-                  </td>
+                  <td className="p-3 text-right">
+  <p className="text-[#3e5f75] text-base font-['Poppins']">Email</p>
+  <p className="text-xl font-['Poppins']">{item.email}</p>
+</td>
+
                 </tr>
               ))}
             </tbody>

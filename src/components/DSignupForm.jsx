@@ -1,91 +1,60 @@
 'use client';
 
-import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-export default function SignupForm() {
-  const searchParams = useSearchParams();
-  const role = searchParams.get('role'); // Get the 'role' query parameter
-
-  // State to hold form data
+export default function SignUpForm() {
   const [formData, setFormData] = useState({
-    username: '', // Text
-    email: '', // Email
-    password: '', // Password
-    company: '', // Text
-    website: '', // Text
-    address: '', // Text
-    referType: '', // Text
-    referEmail: '', // Email
-    mobileNumber: '', // Text
+    username: '',
+    email: '',
+    password: '',
   });
 
-  // Handle input change
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData({
+      ...formData,
       [name]: value,
-    }));
+    });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
     try {
-      // Prepare the payload for the API
-      const payload = {
-        data: {
+      const response = await axios.post(
+        'https://pouchesworldwide.com/strapi/api/auth/local/register',
+        {
           username: formData.username,
           email: formData.email,
           password: formData.password,
-          company: formData.company,
-          website: formData.website,
-          address: formData.address,
-          referType: formData.referType,
-          referEmail: formData.referEmail,
-          mobileNumber: formData.mobileNumber,
-        },
-      };
+        }
+      );
 
-      // Send the data to the API
-      const response = await fetch('http://146.190.245.42:1337/api/distributors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      const userId = response.data.user.id;
+      const role = 'distributor'; // Hardcoded role
 
-      const result = await response.json();
-
-      if (response.ok) {
-        alert('Registration successful!');
-        // Optionally reset the form after success
-        setFormData({
-          username: '',
-          email: '',
-          password: '',
-          company: '',
-          website: '',
-          address: '',
-          referType: '',
-          referEmail: '',
-          mobileNumber: '',
-        });
-      } else {
-        // Handle errors from the API
-        alert('Error: ' + (result.error?.message || 'Registration failed'));
-      }
-    } catch (error) {
-      alert('Error: ' + error.message);
+      // Redirect to complete-profile page with userId & role
+      router.push(`/auth/dcomplete-profile?userId=${userId}&role=${role}`);
+    } catch (err) {
+      setError(err.response?.data?.error?.message || 'Signup failed! ❌');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-black text-white">
-      <form className="w-full max-w-md p-6" onSubmit={handleSubmit}>
+      <form className="w-full max-w-xl p-6" onSubmit={handleSubmit}>
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
         {/* Profile Picture Upload */}
         <div className="flex flex-col items-center space-y-4">
           <div
@@ -98,18 +67,18 @@ export default function SignupForm() {
           </div>
         </div>
 
-        {/* Username (Required) */}
+        {/* Name (Required) */}
         <div className="mb-4">
           <label className="block mb-2 text-sm font-semibold text-zinc-400">
-            Username <span className="text-yellow-500">*</span>
+            Name <span className="text-yellow-500">*</span>
           </label>
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleChange}
-            placeholder="Enter your username"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none"
+            placeholder="Enter your name"
+            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none focus:border-[#fae255]"
             required
           />
         </div>
@@ -125,13 +94,13 @@ export default function SignupForm() {
             value={formData.email}
             onChange={handleChange}
             placeholder="Enter your email"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none"
+            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none focus:border-[#fae255]"
             required
           />
         </div>
 
         {/* Password (Required) */}
-        <div className="mb-4">
+        <div className="mb-8">
           <label className="block mb-2 text-sm font-semibold text-zinc-400">
             Password <span className="text-yellow-500">*</span>
           </label>
@@ -140,115 +109,39 @@ export default function SignupForm() {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder="Enter your password"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none"
+            placeholder="Password"
+            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none focus:border-[#fae255] mb-6"
             required
           />
         </div>
 
-        {/* Company */}
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-zinc-400">
-            Company
-          </label>
-          <input
-            type="text"
-            name="company"
-            value={formData.company}
-            onChange={handleChange}
-            placeholder="Enter your company name"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none"
-          />
-        </div>
+        {/* Agree to Terms and Signup Button */}
+        <div className="flex items-center justify-between mt-8 space-x-3">
+          {/* Agree to Terms */}
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="terms"
+              className="checkbox checkbox-black bg-black border-[#27272A]"
+              required
+            />
+            <label htmlFor="terms" className="text-sm">
+              Agree to Terms & Conditions
+            </label>
+          </div>
 
-        {/* Website */}
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-zinc-400">
-            Website
-          </label>
-          <input
-            type="text"
-            name="website"
-            value={formData.website}
-            onChange={handleChange}
-            placeholder="Enter your website"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none"
-          />
-        </div>
-
-        {/* Address */}
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-zinc-400">
-            Address
-          </label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Enter your address"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none"
-          />
-        </div>
-
-        {/* Mobile Number (Required) */}
-        <div className="mb-8">
-          <label className="block mb-2 text-sm font-semibold text-zinc-400">
-            Mobile Number <span className="text-yellow-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="mobileNumber"
-            value={formData.mobileNumber}
-            onChange={handleChange}
-            placeholder="Enter your mobile number"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none mb-6"
-            required
-          />
-        </div>
-
-        {/* Refer Type */}
-        <div className="mt-12">
-          <label className="block mb-2 text-sm font-semibold text-zinc-400">
-            Refer Type
-          </label>
-          <input
-            type="text"
-            name="referType"
-            value={formData.referType}
-            onChange={handleChange}
-            placeholder="Friend"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none mb-4"
-          />
-        </div>
-
-        {/* Refer Email */}
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-semibold text-zinc-400">
-            Refer Email
-          </label>
-          <input
-            type="email"
-            name="referEmail"
-            value={formData.referEmail}
-            onChange={handleChange}
-            placeholder="Enter refer email"
-            className="w-full input input-bordered bg-black text-white border-[#27272A] placeholder-zinc-400 focus:outline-none"
-          />
-        </div>
-
-        {/* Signup Button */}
-        <div className="flex items-center justify-end mt-8 space-x-3">
+          {/* Signup Button */}
           <button
             type="submit"
-            className="hover:bg-yellow-600 text-black py-2 px-4 rounded-md flex items-center justify-center space-x-2 h-[60px] w-[210px]"
+            disabled={loading}
+            className="hover:bg-yellow-600 text-black py-2 px-4 rounded-md flex items-center justify-center space-x-2 h-[60px] w-[138px]"
             style={{
               borderRadius: '5px',
               background:
                 'var(--gold-gradient, linear-gradient(113deg, #F5D061 -0.67%, #E6AF2E 99.33%))',
             }}
           >
-            <span>Create Distributor</span>
+            <span>{loading ? 'Signing up...' : 'Sign Up'}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-5 h-5"

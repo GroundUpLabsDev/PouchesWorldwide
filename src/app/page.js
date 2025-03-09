@@ -1,8 +1,7 @@
 "use client";
 
-
-
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for redirection
 import Image from 'next/image';
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -15,36 +14,39 @@ import Banner from '../components/Banner';
 import BlackBanner from '@/components/BlackBanner';
 import Pagination from '@/components/Pagination';
 import { fetchProducts } from "@/app/utils/fetchProducts"; // Import the fetchProducts function
+import Preloader from "@/components/Preloader";  // Import Preloader
+import { getUserRole } from "@/app/utils/getUserRole"; // Import getUserRole function
 
 export default function Home() {
   const [products, setProducts] = useState([]); // State to store fetched products
-  
-  // Fetch products when the component mounts
-  useEffect(() => {
-    const getProducts = async () => {
-      const fetchedProducts = await fetchProducts();
-      setProducts(fetchedProducts);
-    };
-  
-    getProducts();
-  }, []); // Empty dependency array means this effect runs only once
+  const [loading, setLoading] = useState(true); // Loading state
+  const [userRole, setUserRole] = useState(null); // State to store userRole
+  const router = useRouter(); // Initialize useRouter for redirection
 
-  const s_products = [
-    {
-      id: 1,
-      Name: 'Zyn Smooth 15',
-      price: 7.86,
-      Image: '/berry.png',
-      rating: 4,
-    },
-    {
-      id: 2,
-      Name: 'Zyn Citrus 10',
-      price: 6.99,
-      Image: '/11.png',
-      rating: 5,
-    },
-  ]; 
+  useEffect(() => {
+    // This will only run after the component is mounted
+    const role = getUserRole(); // Get the user role
+    setUserRole(role);
+
+    if (role === "distributor") {
+      router.push("/inventory"); // Redirect to /inventory if userRole is "distributor"
+    } else if (role === "admin") {
+      router.push("/admin"); // Redirect to /admin if userRole is "admin"
+    } else {
+      const getProducts = async () => {
+        const fetchedProducts = await fetchProducts();
+        setProducts(fetchedProducts);
+        setLoading(false); // Hide preloader once data is fetched
+      };
+
+      getProducts();
+    }
+  }, [router]); // Make sure to run this only when the router is ready
+
+  if (loading) {
+    return <Preloader />; // Show preloader while loading
+  }
+
 
   return (
     
@@ -54,10 +56,10 @@ export default function Home() {
 
   <Link href="/">
     {/* Hero section */}
-    <div className="relative w-full px-0 md:px-6 lg:px-9 bg-black pt-16 overflow-hidden box-border pb-4">
+    <div className="relative w-full px-0 md:px-6 lg:px-9 bg-black pt-8 overflow-hidden box-border pb-8">
           {/* Image */}
           <Image
-            src="/hero.jpg"
+            src="https://pouchesworldwide.com/strapi/uploads/puxx_banner_50583c11de.jpg"
             alt="Banner Image"
             width={1240}
             height={423} 
@@ -80,38 +82,41 @@ export default function Home() {
   {/* Main banner */}
   <div><BlackBanner /></div>
 
-  {/* Split section */}
-  <div className="flex flex-col lg:flex-row-reverse p-4 md:p-6 lg:p-4 justify-center items-center mt-[86px] mb-8 mx-auto max-w-[1220px]">
-  
-  {/* Product Cards - Left Side */}
-  <div className="w-full lg:w-1/2 flex justify-center items-center">
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-[30px] justify-items-center">
-      {s_products.map((product) => (
-        <div key={product.id} className="w-full max-w-sm">
+ {/* Split section */}
+<div className="flex flex-col md:flex-row-reverse p-4 md:p-6 lg:p-4 justify-center items-center mt-[150px] mb-8 mx-auto max-w-[1220px]">
+
+{/* Product Cards - Left Side */}
+<div className="w-full md:w-1/2 flex justify-center">
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-[30px] justify-items-center w-full">
+    {!loading && products
+      .filter((product) => product.Fruit2 === true)
+      .slice(0, 2).map((product) => (
+        <div key={product.id} className="w-full sm:w-auto flex justify-center">
           <ProductCard product={product} />
         </div>
       ))}
-    </div>
   </div>
+</div>
 
-  {/* Rect Banner - Right Side */}
-  <Link href="/">
-    <div className="h-[250px] sm:h-[350px] lg:h-[452px] flex-shrink-0 flex justify-center items-center w-full lg:w-auto mb-6 lg:mb-0 lg:mr-[95px]">
-      <Image
-        src="/rect-banner.png"
-        alt="Banner Image"
-        width={0}
-        height={0}
-        sizes="100vw"
-        priority
-        className="object-cover w-full h-full rounded-lg"
-        draggable={false}
-        onContextMenu={(e) => e.preventDefault()}
-      />
-    </div>
-  </Link>
+{/* Rect Banner - Right Side */}
+<Link href="/" className="w-full md:w-auto">
+  <div className="h-[250px] sm:h-[350px] md:h-[452px] flex-shrink-0 flex justify-center items-center w-full md:w-auto mb-4 md:mb-0 md:mr-[50px] lg:mr-[95px]">
+    <Image
+      src="https://pouchesworldwide.com/strapi/uploads/rectban_301a0242af.jpg"
+      alt="Banner Image"
+      width={0}
+      height={0}
+      sizes="100vw"
+      priority
+      className="object-cover w-full h-full max-w-[400px] md:max-w-none rounded-lg"
+      draggable={false}
+      onContextMenu={(e) => e.preventDefault()}
+    />
+  </div>
+</Link>
 
 </div>
+
 
 
 
@@ -119,20 +124,22 @@ export default function Home() {
 
   {/* Products grid */}
   <div className="relative">
-  <div className="absolute inset-0 h-[290px] bg-black z-0 mt-[880px] hidden sm:block"></div>
+  <div className="absolute inset-0 h-[290px] bg-black z-0 mt-[400px] hidden sm:block"></div>
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 z-10 relative">
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 justify-items-center">
-      {products.slice(0, 8).map((product) => (  // Display only the first 6 products
+      {!loading && products
+      .filter((product) => product.Fruit === true)
+      .slice(0, 4).map((product) => (  // Display only the first 6 products
         <div key={product.id} className="w-full max-w-sm flex justify-center">
           <ProductCard product={product} />
-        </div>
+        </div> 
       ))}
     </div>
 
-    {/* Pagination */}
+    {/* Pagination 
     <div className="flex justify-center">
       <Pagination totalPages={10} />
-    </div>
+    </div>*/}
   </div> 
 </div>
 
@@ -151,3 +158,4 @@ export default function Home() {
 
   );
 }
+ 

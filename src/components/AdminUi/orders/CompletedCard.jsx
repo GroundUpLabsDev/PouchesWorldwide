@@ -13,7 +13,7 @@ const AssignedCard = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get("http://146.190.245.42:1337/api/all-orders?populate=*");
+        const response = await axios.get("https://pouchesworldwide.com/strapi/api/all-orders?populate=*");
         console.log("Fetched orders:", response.data); // Log to check the structure
         // Ensure that the response data is an array before setting the state
         if (Array.isArray(response.data.data)) {
@@ -41,7 +41,7 @@ const AssignedCard = () => {
           <div key={index} className="bg-white rounded-lg border border-zinc-500 p-4 w-[1000px] h-[440px] grid grid-cols-4">
             {/* Product Image */}
             <div className="col-span-1 flex items-center justify-center bg-[#ececec] rounded-lg w-[150px] h-[150px]">
-              <img src={`http://146.190.245.42:1337${order.productImage?.url}`} alt={`Product of ${order.productName[0]?.Name}`} className="w-24 h-24 rounded-lg" />
+            <img src={`${order.cart[0].imageUrl ||  '/2.png'}`} alt={`Product of ${order.productName[0]?.Name}`} className="w-24 h-24 rounded-lg" />
             </div>
 
             {/* Order Details */}
@@ -83,7 +83,7 @@ const AssignedCard = () => {
               </div>
 
               <div className="mt-4">
-                <p className="text-gray-500 text-sm">Quantity</p>
+                <p className="text-gray-500 text-sm">No of Cans</p> 
                 <p className="text-base">
                   {!order.cart || order.cart.length === 0
                     ? order.itemTotal
@@ -94,15 +94,17 @@ const AssignedCard = () => {
               </div>
 
               <div className="mt-4">
-                <p className="text-gray-500 text-sm">Unit Price</p>
-                <p className="text-base">
-                  {!order.cart || order.cart.length === 0 
-                    ? order.productName[0]?.price 
-                    : order.cart.length > 1 
-                      ? "Multiple" 
-                      : order.productName[0]?.price} $
-                </p>
-              </div>
+  <p className="text-gray-500 text-sm">Price Per Can</p>
+  <p className="text-base">
+    {!order.cart || order.cart.length === 0 
+      ? order.productName[0]?.price 
+      : order.cart.length > 1 
+        ? "Multiple" 
+        : order.productName[0]?.price} 
+    {order.cart?.length === 1 ? " $" : ""}
+  </p>
+</div>
+
             </div>
 
             {/* Date & Total */}

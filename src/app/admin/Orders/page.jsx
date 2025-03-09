@@ -13,7 +13,7 @@ export default function AdminDashboard() {
     return (
         <>
         <Header />
-        <Banner />
+      {/* <Banner />*/}
         <h1 className="pt-12 pl-16 text-black text-[32px] font-semibold font-['Poppins'] ml-[290px]">Manage Your All Orders</h1>
         <AllOrderTab />
 

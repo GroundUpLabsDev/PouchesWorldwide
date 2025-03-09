@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @keyframes marquee {
     0% {
       transform: translateX(0%);
@@ -10,8 +9,7 @@
     100% {
       transform: translateX(-100%);
     }
-  }
-
+}
 
 @keyframes scroll {
   0% {
@@ -40,6 +38,11 @@
     display: flex;
     animation: scroll 10s linear infinite; /* You can adjust the speed here */
   }
+}
+
+/* Hide Next.js Static Route Icon */
+[data-next-route-announcer] {
+  display: none !important;
 }
 
 /* Tailwind Example */

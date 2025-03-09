@@ -19,7 +19,7 @@ const SellerInfo = ({ userId }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://146.190.245.42:1337/api/users/${userId}`);
+                const response = await fetch(`https://pouchesworldwide.com/strapi/api/users/${userId}`);
                 const data = await response.json();
                 setUserData(data); // Store user data in state
             } catch (error) {

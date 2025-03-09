@@ -12,7 +12,7 @@ const PrimaryList = () => {
   useEffect(() => {
     const getProducts = async () => {
       const fetchedProducts = await fetchProducts();
-      setProducts(fetchedProducts);
+      setProducts(fetchedProducts); 
     };
 
     getProducts();
@@ -20,7 +20,7 @@ const PrimaryList = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-center mb-14">
         <div className="flex flex-row gap-3 sm:gap-4 justify-center items-center"> {/* Centering buttons horizontally */}
           <button
             onClick={() => setActiveTab("new")}
@@ -43,19 +43,24 @@ const PrimaryList = () => {
 
       {/* Tab content with centered grid */}
       <div className="mt-8">
-        {activeTab === "new" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 justify-items-center">
-            {products.map((product) => (
-              <div key={product.id} className="w-full max-w-sm flex justify-center"> {/* Center ProductCard on small screens */}
-                <ProductCard product={product} />
-              </div> 
-            ))}
+      {activeTab === "new" && (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 justify-items-center">
+      {products
+        .filter((product) => product.position === "New") // Filter only "New" products
+        .slice(0, 8)
+        .map((product) => (
+          <div key={product.id} className="w-full max-w-sm flex justify-center">
+            <ProductCard product={product} />
           </div>
-        )}
+        ))}
+    </div>
+  )}
 
         {activeTab === "best" && (
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 justify-items-center">
-         {products.map((product) => (
+         {products
+          .filter((product) => product.position === "Best")
+         .slice(0, 8).map((product) => (
            <div key={product.id} className="w-full max-w-sm flex justify-center"> {/* Center ProductCard on small screens */}
              <ProductCard product={product} />
            </div>

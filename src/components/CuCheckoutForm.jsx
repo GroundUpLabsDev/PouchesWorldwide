@@ -6,11 +6,20 @@ import Link from "next/link";
 import { ArrowRight, Tag, CheckCircle, Circle } from "lucide-react";
 import { getUserRole } from "@/app/utils/getUserRole";
 
+
 const CuCheckoutForm = () => {
     // Renamed paymentMethod to method
     const [method, setMethod] = useState('');
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams(); 
     const totalPrice = searchParams.get('totalPrice') || '0.00';
+    const [userId, setUserId] = useState(null); 
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+          const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+          setUserId(storedUser.id || null);
+        }
+      }, []);
 
     const [agreeTerms, setAgreeTerms] = useState(false);
     const tax = 0.0;
@@ -106,6 +115,7 @@ const CuCheckoutForm = () => {
         // Prepare order data including the cart data from the URL
         const orderData = {
             data: {
+                ...(method === "Contingency" && { astatus: 'pending' }),
                 customerName: formData.customerName,
                 email: formData.email,
                 mobile: formData.mobile,
@@ -153,12 +163,43 @@ const CuCheckoutForm = () => {
                         }
                     ]
                 }),
+                ...(method === "Contingency" && {
+                    user: userId,
+                    timeline: [
+                        {
+                            title: "Contingency Order Approved",
+                            Reason: "Contingency Order Approved",
+                            status: "inProgress"
+                        },
+                        {
+                            title: "Order Processor Appointed",
+                            Reason: "Assigned to processor",
+                            status: "upcoming"
+                        },
+                        {
+                            title: "Order Processing",
+                            Reason: "Order in progress",
+                            status: "upcoming"
+                        },
+                        {
+                            title: "Order Shipping Details In Inspection",
+                            Reason: "Shipping in inspection",
+                            status: "upcoming"
+                        },
+                        {
+                            title: "Order Shipped",
+                            Reason: "Order dispatched",
+                            status: "upcoming"
+                        }
+                    ]
+                }),
             },
         };
+        
     
         try {
             // Send data to Strapi API
-            const response = await fetch("http://146.190.245.42:1337/api/all-orders", {
+            const response = await fetch("https://pouchesworldwide.com/strapi/api/all-orders", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -173,6 +214,11 @@ const CuCheckoutForm = () => {
             const data = await response.json();
             const orderId = data.data.id;
             console.log("Order submitted successfully:", orderId);
+
+             // Only show alert if method is "Contingency"
+    if (method === "Contingency") {
+        alert(`Order Submitted Successfully! Your Order ID is #${orderId}`);
+    }
     
             // Redirect to payment based on method
             let url = "/";
@@ -182,8 +228,8 @@ const CuCheckoutForm = () => {
                 url = `/payment/crypto/?totalPrice=${totalPrice}&email=${formData.email}&id=${orderId}`;
             } else if (method === "Cod") {
                 url = `/payment/cod/?totalPrice=${totalPrice}&email=${formData.email}&id=${orderId}`;
-            } else if (method === "Bank") {
-                url = `/payment/bank/?totalPrice=${totalPrice}&email=${formData.email}&id=${orderId}`;
+            } else if (method === "Contingency") {
+                url = `/`;
             }
     
             router.push(url);
@@ -371,12 +417,12 @@ const CuCheckoutForm = () => {
                         </div>
                         <h2 className="text-lg font-semibold text-primary mb-4">Payment Options</h2>
                         <div className="space-y-4"> 
-                            {/* Loan Payment Option */}
+                            {/* Contingency Payment Option */}
                         <div
                             className={`flex items-center p-4 border rounded-lg mb-6 ${
-                                paymentMethod === 'Loan' ? 'bg-yellow-100 border-yellow-300' : 'bg-white'
+                                method === 'Contingency' ? 'bg-yellow-100 border-yellow-300' : 'bg-white'
                             } cursor-pointer`}
-                            onClick={() => setPaymentMethod('Loan')}
+                            onClick={() => setMethod('Contingency')}
                         >
                             <div className="w-[80px] h-[53.65px] mr-4 bg-gradient-to-br from-[#ffe047] to-[#ffb200] rounded-lg flex items-center justify-center text-white font-bold">
                                 <div className="w-[51.56px] h-8">
@@ -387,9 +433,9 @@ const CuCheckoutForm = () => {
                             </div>
                             <div className="flex-1">
                                 <h3 className="text-gray-800 font-semibold capitalize">contingency plan </h3>
-                                <p className="text-gray-600 text-sm capitalize">pay as a loan</p>
+                                <p className="text-gray-600 text-sm capitalize">pay as a Contingency</p>
                             </div>
-                            {paymentMethod === 'Loan' ? (
+                            {method === 'Contingency' ? (
                                 <CheckCircle className="text-yellow-500 text-2xl" />
                             ) : (
                                 <Circle className="text-gray-400 text-2xl" />

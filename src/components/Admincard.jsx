@@ -29,13 +29,19 @@ const Admincard = ({ onSaveOrderClick }) => {
         }
 
         // Fetch orders from API
-        const response = await fetch("http://146.190.245.42:1337/api/all-orders?populate=*");
+        const response = await fetch("https://pouchesworldwide.com/strapi/api/all-orders?populate=*");
         const data = await response.json();
 
         // Filter orders assigned to the logged-in user
         const userOrders = data.data.filter(
-          (order) => order.assigned?.length > 0 && order.assigned[0]?.id === loggedUserId
+          (order) =>
+            order.assigned?.length > 0 &&
+            order.assigned[0]?.id === loggedUserId &&
+            order.astatus !== "Pending Approval" &&
+            order.astatus !== "FULL FILLED"
         );
+  
+        setOrders(userOrders);
         
 
         setOrders(userOrders);
@@ -67,7 +73,7 @@ const Admincard = ({ onSaveOrderClick }) => {
           {/* 1st Grid: Product Image */}
           <div className="col-span-1 flex items-center justify-center bg-[#ececec] rounded-lg w-[150px] h-[150px]">
             <img
-              src={order.Image?.formats?.medium?.url || '/4.png'} 
+              src={`${order.cart[0].imageUrl ||  '/2.png'}`}
               alt={`Product of ${order.productName}`}
               className="w-24 h-24 rounded-lg"
             />
@@ -87,18 +93,30 @@ const Admincard = ({ onSaveOrderClick }) => {
 
             <div className="mt-2">
               <p className="text-gray-500 text-sm">Item Name</p>
-              <p className="text-base">{order.productName[0].Name}</p>
-            </div>
+              <p className="text-base">{!order.cart || order.cart.length === 0 
+      ? order.productName[0]?.Name 
+      : order.cart.length > 1  
+        ? "Multiple" 
+        : order.productName[0]?.Name}</p>
+              </div>
 
             <div className="mt-3">
-              <p className="text-gray-500 text-sm">Total Cans</p>
-              <p className="text-base">{order.itemTotal}</p>
-            </div>
+              <p className="text-gray-500 text-sm">No of Cans</p>
+              <p className="text-base">{!order.cart || order.cart.length === 0
+      ? order.itemTotal
+      : order.cart.length > 1
+        ? "Multiple"
+        : order.itemTotal}</p>
+              </div>
 
             <div className="mt-3">
               <p className="text-gray-500 text-sm">Price Per Can</p>
-              <p className="text-base">{order.productName[0].price} $</p>
-            </div>
+              <p className="text-base">{!order.cart || order.cart.length === 0 
+      ? order.productName[0]?.price 
+      : order.cart.length > 1 
+        ? "Multiple" 
+        : order.productName[0]?.price} </p>
+              </div> 
 
             <div className="mt-2">
               <p className="text-gray-500 text-sm">Commission</p>
@@ -110,10 +128,10 @@ const Admincard = ({ onSaveOrderClick }) => {
           <div className="col-start-4 flex flex-col justify-between text-right">
             <div className="w-[154px] h-[66px]">
             <p className="text-gray-500 mb-2">
-  {new Date(order.updatedAt).toISOString().split('T')[0]}
-</p>
+  {new Date(order.createdAt).toISOString().split('T')[0]}
+</p> 
 
-              <p className="text-xl font-semibold">Total: {order.itemTotal} $</p>
+              <p className="text-xl font-semibold">Commission: {order.commission} $</p>
             </div>
             <div className="flex flex-col gap-2 mb-8 mr-4">
               {/* Order Status Dropdown 

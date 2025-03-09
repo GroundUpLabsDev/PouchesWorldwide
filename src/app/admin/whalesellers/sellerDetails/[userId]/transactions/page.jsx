@@ -7,11 +7,14 @@ import TransactionTable from "@/components/AdminUi/TransactionTable";
 
 export default function TransactionsPage({ userId }) {
   const [username, setUsername] = useState("");
+  const [profit, setProfit] = useState("");
+  const [contingency, setContingency] = useState("");
+  const [referral_earnings, setReferral_earnings] = useState("");
 
   useEffect(() => { 
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://146.190.245.42:1337/api/users");
+        const response = await fetch("https://pouchesworldwide.com/strapi/api/users");
         const users = await response.json();
 
         // Find the user by userId
@@ -19,8 +22,15 @@ export default function TransactionsPage({ userId }) {
         
         if (user) {
           setUsername(user.username);
+          setProfit(user.profit);
+          setContingency(user.contingency);
+          setReferral_earnings(user.referral_earnings);
         } else {
           setUsername("Unknown User");
+          setProfilePicture(""); // Set to an empty string if user is not found
+          setProfit("0");
+          setContingency("0");
+          setReferral_earnings("0");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -87,19 +97,19 @@ export default function TransactionsPage({ userId }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-black text-[#e6af2e] text-[28px] font-semibold p-4 rounded-lg text-start">
           <h2 className="text-lg font-bold">Profit</h2>
-          <p className="text-2xl mt-2 text-white">34,000 $</p>
+          <p className="text-2xl mt-2 text-white">{profit} $</p>
         </div>
         <div className="bg-gray-700 text-[#e6af2e] text-[28px] font-semibold p-4 rounded-lg text-start">
           <h2 className="text-lg font-bold">Contingency</h2>
-          <p className="text-2xl mt-2 text-white">4,000 $</p>
+          <p className="text-2xl mt-2 text-white">{contingency} $</p>
         </div>
         <div className="bg-gray-800 text-[#e6af2e] text-[28px] font-semibold p-4 rounded-lg text-start">
           <h2 className="text-lg font-bold">Referral</h2>
-          <p className="text-2xl mt-2 text-white">2,300 $</p>
+          <p className="text-2xl mt-2 text-white">{referral_earnings} $</p>
         </div>
       </div>
       <div className="text-black text-lg font-medium font-['Poppins'] capitalize text-left mb-4">do some withdrawal ? </div>
-      <TransactionDetails />
+      <TransactionDetails userId={userId} />
       <div className="text-black text-[24.92px] font-medium font-['Poppins'] capitalize text-left mt-4 mb-4">transaction history</div>
       <TransactionTable data={dummyData}/>
       </div>

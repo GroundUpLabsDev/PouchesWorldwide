@@ -85,7 +85,7 @@ const CreateOrder = ({ productId }) => {
               className="rounded-full mr-4"
               height={64}
               width={64}
-              src={`http://146.190.245.42:1337${productDetails.img}`}
+              src={`https://pouchesworldwide.com/strapi${productDetails.img}`}
             />
           </div>
           <h1 className="text-[#3f6075] text-lg font-medium font-['Poppins'] capitalize">

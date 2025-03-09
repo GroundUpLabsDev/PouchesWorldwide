@@ -11,7 +11,7 @@ const RequestCards = ({ product, addToRequest }) => {
         {/* Product Image */}
         <figure className="px-8 pt-6">
           <img
-            src={`http://146.190.245.42:1337${imageUrl}`}
+            src={`https://pouchesworldwide.com/strapi${imageUrl}`}
             alt={Name}
             width={200}
             height={200}

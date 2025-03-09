@@ -3,7 +3,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Banner from "@/components/Banner";
-import StatusOrder from "@/components/statusorder";
+import StatusOrder from "@/components/StatusOrder";
 import StatusTable from "@/components/StatusTable";
 import { ArrowLeft } from "lucide-react";
 
@@ -38,7 +38,7 @@ const Status = () => {
   return (
     <>
       <Header />
-      <Banner />
+    {/* <Banner />*/}
       <div className="bg-gray-100 p-6">
       <div className="flex items-center gap-2 flex justify-center mr-[550px]">
       {/* Add the ArrowLeft icon */}

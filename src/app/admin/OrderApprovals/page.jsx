@@ -13,7 +13,7 @@ export default function AdminDashboard() {
     return (
         <>
         <Header />
-        <Banner />
+      {/* <Banner />*/}
 
         <OrderTab />
         <Footer />

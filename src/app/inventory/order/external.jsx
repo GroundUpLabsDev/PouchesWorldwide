@@ -27,7 +27,7 @@ const External = () => {
     const fetchOrders = async () => {
       try {
         // Fetch orders using the wholesaler API
-        const response = await fetch('http://146.190.245.42:1337/api/wholesaler-orders?populate=*');
+        const response = await fetch('https://pouchesworldwide.com/strapi/api/wholesaler-orders?populate=*');
         const data = await response.json();
 
         // Fetch all products using the utility
@@ -38,22 +38,29 @@ const External = () => {
         const fetchedOrders = data.data
           .filter(order => order.user && order.user.id === userId)
           .map((order) => {
-            const productId = order.product.id; // Get product id from order
+            // Check if order.product exists before accessing its properties
+            const productId = order.product ? order.product.id : null;
+
+            if (!productId) {
+              return null; // Skip orders without valid product ID
+            }
+
             // Find the product whose Image.url corresponds to the current product's id
             const productItem = products.find(prod => prod.id === productId);
-            const productImageUrl = productItem ? `http://146.190.245.42:1337${productItem.Image.url}` : '';
+            const productImageUrl = productItem ? `https://pouchesworldwide.com/strapi${productItem.Image.url}` : '';
 
             return {
               productImageUrl,
               createdAt: new Date(order.createdAt).toLocaleDateString(),
               customerName: order.customerName,
               address: `${order.address.street}, ${order.address.city}, ${order.address.state}, ${order.address.country}`,
-              productName: order.product.Name,
+              productName: order.product ? order.product.Name : 'Unknown Product',
               quantity: order.quantity,
               unitPrice: order.unitPrice,
               itemTotal: order.quantity * order.unitPrice,
             };
-          });
+          })
+          .filter(order => order !== null); // Remove any null entries from the orders
 
         setOrders(fetchedOrders);
         setLoading(false);

@@ -26,7 +26,7 @@ const Header = () => {
 
   useEffect(() => {
     setUserRole(getUserRole());
-  }, []);
+  }, []); 
 
   return (
     <>
@@ -39,6 +39,7 @@ const Header = () => {
 
   {/* Navbar */}
   <div className="bg-black shadow-md px-4 md:px-8 lg:px-8">
+  <div className="max-w-[1550px] mx-auto">
     <div className="navbar flex justify-center items-center gap-4 md:gap-[57px]">
       {/* Logo */}
       <div className="flex-1 max-w-xs">
@@ -217,9 +218,10 @@ const Header = () => {
     )}
   </div>
 </div>
+</div>
 
 {/* Padding to prevent content overlap */}
-<div className="pt-[96px]" />
+<div className="pt-[120px]" />
 
 
     </>

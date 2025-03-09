@@ -158,7 +158,7 @@ const CuCheckoutForm = () => {
     
         try {
             // Send data to Strapi API
-            const response = await fetch("http://146.190.245.42:1337/api/all-orders", {
+            const response = await fetch("https://pouchesworldwide.com/strapi/api/all-orders", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

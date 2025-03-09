@@ -20,7 +20,7 @@ const OrderHistoryPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("http://146.190.245.42:1337/api/all-orders?populate=*");
+        const response = await fetch("https://pouchesworldwide.com/strapi/api/all-orders?populate=*");
         const data = await response.json();
 
         // Find the order that matches the ID from the URL
@@ -68,28 +68,26 @@ const OrderHistoryPage = () => {
   return (
     <>
       <Header />
-      <Banner />
+    {/* <Banner />*/}
       <div className="bg-gray-100 p-6">
-        <div className="flex items-center gap-2 justify-center mr-[350px]">
+        <div className="flex items-center gap-2 justify-center mr-[375px]">
           <Link href="/cart">
             <ArrowLeft className="text-black w-8 h-8 cursor-pointer" />
           </Link>
           <div className="text-black text-[32px] font-semibold font-['Poppins'] capitalize">
-            Order status - #{order.id}
-            <div className="ml-4 h-11 px-5 py-2.5 inline-flex">
-              <div
-                className={`text-base font-medium font-['Poppins'] capitalize px-4 py-2 rounded-md ${
-                  order.astatus === "Canceled"
-                    ? "bg-red-500 text-white"
-                    : order.astatus === "Approved"
-                    ? "bg-[#009b7c] text-white"
-                    : "bg-[#f5d061]/80 text-black"
-                }`}
-              >
-                {order.method}
-              </div>
-            </div>
-          </div>
+  Order status - #{order.id}
+  <div className="ml-4 h-11 px-5 py-2.5 inline-flex space-x-3">
+    <label className="h-10 flex items-center text-base font-medium font-['Poppins'] capitalize px-4 py-2 rounded-md bg-gray-200">
+      {order.astatus} 
+    </label>
+    <label className="h-10 flex items-center text-base font-medium font-['Poppins'] capitalize px-4 py-2 rounded-md bg-[#f5d061]">
+      {order.method}
+    </label>
+  </div>
+</div>
+
+
+
         </div>
       </div>
       <div className="bg-gray-100">
@@ -108,11 +106,11 @@ const OrderHistoryPage = () => {
         )}
       </div>
        <StatusOrder order={order} />
-     {/* <div className="bg-gray-100 p-2 flex justify-center">
+      <div className="bg-gray-100 p-2 flex justify-center">
        <div className="bg-white flex items-center justify-center w-[1030px] rounded-lg pt-6">
-          <StatusTable tableData={order.attributes.products || []} />
+          <StatusTable tableData={order.cart || []} /> 
         </div>
-      </div>*/} 
+      </div>
       <Footer />
     </>
   );

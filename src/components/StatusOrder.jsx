@@ -9,7 +9,7 @@ const StatusOrder = ({ order }) => {
     const [paymentMethod, setPaymentMethod] = useState('');
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [isClient, setIsClient] = useState(false); // To track whether we are on the client
-    const  timeline = order.timeline;
+    const  timeline = order?.timeline;
 
     // Use useEffect to ensure this only runs on the client
     useEffect(() => {
@@ -63,7 +63,7 @@ const StatusOrder = ({ order }) => {
                         <h2 className="text-lg font-semibold text-gray-700 mb-4">Payment Options</h2>
                         <div className="space-y-4">
     {order.method === "Card" && (
-        // Card Payments Option
+        // Card Payments Option 
         <div 
             className={`flex items-center p-4 border rounded-lg ${
                 paymentMethod === 'Card Payments' ? 'bg-yellow-100 border-yellow-300' : 'bg-white'
@@ -99,6 +99,31 @@ const StatusOrder = ({ order }) => {
             <div className="flex-1">
                 <h3 className="text-gray-800 font-semibold">Crypto Currency</h3>
                 <div className="opacity-70 text-black text-[10px] font-medium font-['Poppins'] capitalize leading-[14px]">With Any Coin</div>
+            </div>
+            <div className="h-[35px] px-4 py-2.5 bg-gradient-to-r from-[#009b7c] via-[#009b7d] to-[#009b7d] rounded-md justify-center items-center gap-1 inline-flex">
+                <div className="text-white text-[11px] font-semibold font-['Poppins'] capitalize leading-none">verified</div>
+            </div>
+        </div>
+    )}
+
+{order.method === "Contingency" && (
+        // Crypto Currency Option
+        <div 
+            className={`flex items-center p-4 border rounded-lg ${
+                paymentMethod === 'Contingency' ? 'bg-yellow-100 border-yellow-300' : 'bg-white'
+            } cursor-pointer`}
+            onClick={() => setPaymentMethod('Contingency')}
+        >
+            <div className="w-[80px] h-[53.65px] mr-4 bg-gradient-to-br from-[#ffe047] to-[#ffb200] rounded-lg flex items-center justify-center text-white font-bold">
+                                <div className="w-[51.56px] h-8">
+                                    <span className="text-zinc-800 text-[21.33px] font-bold font-['Poppins'] capitalize leading-[29.87px]">L</span>
+                                    <span className="text-zinc-800 text-base font-bold font-['Poppins'] capitalize leading-[22.86px]">O</span>
+                                    <span className="text-zinc-800 text-[21.33px] font-bold font-['Poppins'] capitalize leading-[29.87px]">AN</span>
+                                </div>
+                            </div> 
+            <div className="flex-1">
+                <h3 className="text-gray-800 font-semibold capitalize">contingency plan</h3>
+                <div className="opacity-70 text-black text-[10px] font-medium font-['Poppins'] capitalize leading-[14px]">pay as a Contingency</div>
             </div>
             <div className="h-[35px] px-4 py-2.5 bg-gradient-to-r from-[#009b7c] via-[#009b7d] to-[#009b7d] rounded-md justify-center items-center gap-1 inline-flex">
                 <div className="text-white text-[11px] font-semibold font-['Poppins'] capitalize leading-none">verified</div>

@@ -15,7 +15,7 @@ export default function TabNavigation({ userId }) {
   const [activeTab, setActiveTab] = useState("Profile");
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 ">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 mt-12">
       <div className="w-full max-w-[1350px] flex flex-col items-center ">
         {/* Tabs */}
         <div className="w-full flex border border-[#282f44] rounded-full overflow-hidden mb-6 h-[54.44px]">

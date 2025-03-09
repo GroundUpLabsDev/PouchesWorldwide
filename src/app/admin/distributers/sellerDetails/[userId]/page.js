@@ -11,13 +11,13 @@ const SellerDetailsPage = async ({ params }) => {
 
   // Mock data
   const sellers = [
-    { id: 1, name: "John Doe", email: "john@example.com", mobile: "123-456-7890" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", mobile: "987-654-3210" },
-    { id: 3, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
-    { id: 4, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
-    { id: 5, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
-    { id: 6, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
-    { id: 7, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
+    { id: 41, name: "John Doe", email: "john@example.com", mobile: "123-456-7890" },
+    { id: 42, name: "Jane Smith", email: "jane@example.com", mobile: "987-654-3210" },
+    { id: 43, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
+    { id: 44, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
+    { id: 45, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
+    { id: 46, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
+    { id: 47, name: "Alice Johnson", email: "alice@example.com", mobile: "555-123-4567" },
   ];
 
   // Find the seller with the matching userId
@@ -42,7 +42,7 @@ const SellerDetailsPage = async ({ params }) => {
   return (
     <>
       <Header />
-      <Banner />
+    {/* <Banner />*/}
       <div className="p-4">
         {/* Tab Navigation */}
         <DTabNavigation tabs={tabs} userId={userId} />

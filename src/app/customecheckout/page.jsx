@@ -1,5 +1,5 @@
 
-
+import { Suspense } from 'react'; // Import Suspense
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CuCheckoutForm from "@/components/CuCheckoutForm";
@@ -12,10 +12,11 @@ export default function customecheckout() {
     return (
         <>
         <Header />
-        <Banner />
+      {/* <Banner />*/}
+      <Suspense fallback={<div>Loading checkout form...</div>}>
         <CuCheckoutForm />
 
-
+        </Suspense>
         <Footer />
 </>
   );

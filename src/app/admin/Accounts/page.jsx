@@ -14,7 +14,7 @@ export default function AccountPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://146.190.245.42:1337/api/users/");
+        const response = await fetch("https://pouchesworldwide.com/strapi/api/users/");
         const data = await response.json();
         
         // Filter only wholesaler users
@@ -59,7 +59,7 @@ export default function AccountPage() {
   return (
     <>
       <Header />
-      <Banner />
+    {/* <Banner />*/}
       <div className="flex flex-col items-center justify-center p-5 w-[1010px] mx-auto mt-12 mb-8">
         {/* Radio Button Filter - Enhanced with Circle Indicator */}
         <div className="flex justify-center space-x-8 mb-4">

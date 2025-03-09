@@ -5,7 +5,6 @@ import { ArrowRight, Search } from "lucide-react";
 
 const StockTable = ({ onCreateOrderClick }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  // We'll store only orders (for the logged-in user) here.
   const [orders, setOrders] = useState([]);
   const [userId, setUserId] = useState(null);
 
@@ -27,11 +26,11 @@ const StockTable = ({ onCreateOrderClick }) => {
     const fetchOrdersData = async () => {
       try {
         // Fetch orders.
-        const ordersResponse = await fetch("http://146.190.245.42:1337/api/orders");
+        const ordersResponse = await fetch("https://pouchesworldwide.com/strapi/api/inventories?populate=*");
         const ordersJson = await ordersResponse.json();
-        // Filter orders for the logged in user.
+        // Filter orders for the logged-in user.
         const userOrders = ordersJson.data.filter(
-          (order) => order.user && order.user.id === userId
+          (order) => order.user && order.user[0].id === userId
         );
 
         setOrders(userOrders);
@@ -42,15 +41,6 @@ const StockTable = ({ onCreateOrderClick }) => {
 
     fetchOrdersData();
   }, [userId]);
-
-  // Filter orders based on search term against the product name from cart_items.
-  const filteredOrders = orders.filter((order) => {
-    return (
-      order.cart_items &&
-      order.cart_items.product_name &&
-      order.cart_items.product_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
 
   return (
     <>
@@ -84,82 +74,70 @@ const StockTable = ({ onCreateOrderClick }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map((order) => (
-              <tr key={order.id}>
-                {/* Category */}
-                <td style={{ width: "150px" }}>
-                  <div className="text-[#3f6075] text-lg font-medium font-['Poppins'] capitalize">
-                    {order.cart_items &&
-                    order.cart_items.category &&
-                    order.cart_items.category.Name
-                      ? order.cart_items.category.Name
-                      : "N/A"}
-                  </div>
-                </td>
-                {/* Product */}
-                <td style={{ width: "200px" }}>
-                  <div className="flex items-center gap-3">
+            {orders
+              .filter((order) =>
+                order.product[0].Name.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((order) => (
+                <tr key={order.id}>
+                  {/* Category */}
+                  <td style={{ width: "150px" }}>
                     <div className="text-[#3f6075] text-lg font-medium font-['Poppins'] capitalize">
-                      {order.cart_items && order.cart_items.product_name
-                        ? order.cart_items.product_name
-                        : "N/A"}
+                      {order.product[0].Name || "N/A"}
                     </div>
-                  </div>
-                </td>
-                {/* Image */}
-                <td style={{ width: "150px" }}>
-                  <div className="w-16 h-16 rounded overflow-hidden bg-[#ececec]">
-                    {order.cart_items &&
-                    order.cart_items.Image &&
-                    order.cart_items.Image.url ? (
-                      <img
-                        src={`http://146.190.245.42:1337${order.cart_items.Image.url}`}
-                        alt={order.cart_items.product_name || "Product Image"}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200" />
-                    )}
-                  </div>
-                </td>
-                {/* Search column placeholder */}
-                <td style={{ width: "350px" }}></td>
-                {/* Price */}
-                <td
-                  className="text-lg font-medium font-['Poppins'] capitalize"
-                  style={{ width: "150px" }}
-                >
-                  {order.cart_items && order.cart_items.unit_price
-                    ? order.cart_items.unit_price
-                    : "N/A"}
-                </td>
-                {/* Stock */}
-                <td
-                  className="text-lg font-medium font-['Poppins'] capitalize"
-                  style={{ width: "100px" }}
-                >
-                  {order.Stock ? order.Stock : "N/A"}
-                </td>
-                {/* Add Order */}
-                <td style={{ width: "150px" }}>
-                  <button
-                    onClick={() =>
-                      onCreateOrderClick(
-                        order.cart_items && order.cart_items.product_id
-                          ? order.cart_items.product_id
-                          : order.id
-                      )
-                    }
-                    className="btn h-[52px] w-[120px] rounded-lg text-black text-[10px] font-medium font-['Poppins'] capitalize inline-flex items-center justify-center gap-1"
-                    style={{
-                      background: "linear-gradient(113deg, #F5D061 -0.67%, #E6AF2E 99.33%)",
-                    }}
+                  </td>
+                  {/* Product */}
+                  <td style={{ width: "200px" }}>
+                    <div className="flex items-center gap-3">
+                      <div className="text-[#3f6075] text-lg font-medium font-['Poppins'] capitalize">
+                        {order.product[0].Name || "N/A"}
+                      </div>
+                    </div>
+                  </td>
+                  {/* Image */}
+                  <td style={{ width: "150px" }}>
+                    <div className="w-16 h-16 rounded overflow-hidden bg-[#ececec]">
+                      {order.product[0].Image2 ? (
+                        <img
+                          src={order.product[0].Image2}
+                          alt={order.product[0].Name || "Product Image"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200" />
+                      )}
+                    </div>
+                  </td>
+                  {/* Search column placeholder */}
+                  <td style={{ width: "350px" }}></td>
+                  {/* Price */}
+                  <td
+                    className="text-lg font-medium font-['Poppins'] capitalize"
+                    style={{ width: "150px" }}
                   >
-                    Add Order <ArrowRight size={14} />
-                  </button> 
-                </td>
-              </tr>
-            ))}
+                    ${order.product[0].price || "N/A"}
+                  </td>
+                  {/* Stock */}
+                  <td
+                    className="text-lg font-medium font-['Poppins'] capitalize"
+                    style={{ width: "100px" }}
+                  >
+                    {order.cans || "N/A"}
+                  </td>
+                  {/* Add Order */}
+                  <td style={{ width: "150px" }}>
+                    <button
+                      onClick={() => onCreateOrderClick(order.id)}
+                      className="btn h-[52px] w-[120px] rounded-lg text-black text-[10px] font-medium font-['Poppins'] capitalize inline-flex items-center justify-center gap-1"
+                      style={{
+                        background: "linear-gradient(113deg, #F5D061 -0.67%, #E6AF2E 99.33%)",
+                      }}
+                    >
+                      Add Order <ArrowRight size={14} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

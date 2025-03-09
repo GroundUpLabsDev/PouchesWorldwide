@@ -1,6 +1,6 @@
 
 
-"use client";
+"use client"
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -33,7 +33,7 @@ const ReviewPage = () => {
   return (
     <>
       <Header />
-      <Banner />
+    {/* <Banner />*/}
       <div className="mx-auto max-w-6xl p-4">
         <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize mb-4">
           Review <span className="text-black">Information</span>

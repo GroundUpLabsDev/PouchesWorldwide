@@ -1,17 +1,17 @@
 import React from "react";
 import Link from "next/link";
 
-const HistoryCard = ({ id, createdAt, astatus, totalAmount, images = [] }) => {
+const HistoryCard = ({ id, createdAt, astatus, totalAmount, method, cart = [] }) => { 
   return (
     <div className="bg-white rounded-lg border border-[#adb5bd]/40 p-4 flex items-center space-x-4 w-[871px] h-[191px]">
-      <div className="grid grid-cols-2 gap-2 bg-gray mr-6">
-        {images.length > 0 ? (
-          images.map((src, index) => (
+       <div className="grid grid-cols-2 gap-2 bg-gray mr-6">
+        {cart.length > 0 ? (
+          cart.map((item, index) => (
             <img
               key={index}
-              src={src}
-              alt={`Product image ${index + 1}`}
-              className="w-[60px] h-[60px] object-cover rounded"
+              src={item.imageUrl} // Use imageUrl from cart item
+              alt={item.Name} // Use product name for alt text
+              className="w-[60px] h-[60px] object-cover rounded" 
             />
           ))
         ) : (
@@ -29,17 +29,32 @@ const HistoryCard = ({ id, createdAt, astatus, totalAmount, images = [] }) => {
           </span>
         </Link>
         <div className="opacity-70 text-[#2f4858] text-base font-medium font-['Poppins']">
-          {createdAt}
+        {createdAt.split("T")[0]}
         </div>
       </div>
       <div className="flex flex-col items-end space-y-2">
-      <div
-  className={`h-[43px] px-5 py-2.5 rounded-[11px] justify-center items-center gap-2.5 text-center text-[15px] font-medium font-['Poppins'] capitalize mb-[75px] ${
-    astatus === "Canceled" ? "bg-[#fa4032] text-white" : "hidden"
-  }`}
->
-  {astatus === "Canceled" && astatus}
+      <div className="flex items-center space-x-3 mb-[75px]">
+
+         {/* Additional Label */}
+  <div className="h-[43px] px-5 py-2.5 rounded-[11px] bg-[#f5d061] text-white text-center text-[15px] font-medium font-['Poppins'] capitalize">
+    {method}
+  </div>
+  {/* Status Label */}
+  <div
+    className={`h-[43px] px-5 py-2.5 rounded-[11px] text-center text-[15px] font-medium font-['Poppins'] capitalize
+      ${astatus === "Canceled" ? "bg-[#fa4032] text-white" : 
+        astatus === "Approved" ? "bg-[#009b7c] text-white" : 
+        astatus === "Pending" ? "bg-[#f5d061] text-black" : 
+        "bg-gray-300 text-black" // Default color for other statuses
+      }`}
+  >
+    {astatus}
+  </div>
+
+ 
 </div>
+
+
 
 
         <div className="text-[#2f4858] text-[32px] font-medium font-['Poppins']">

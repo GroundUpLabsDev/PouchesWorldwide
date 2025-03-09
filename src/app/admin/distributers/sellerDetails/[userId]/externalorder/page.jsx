@@ -1,5 +1,5 @@
-
 "use client";
+
 import { useEffect, useState } from 'react';
 import EOrderCard from '@/components/EOrderCard';
 import { fetchProducts } from "@/app/utils/fetchProducts";
@@ -23,7 +23,7 @@ const External = ({ userId }) => {
         setError(null); // Reset error state before fetching
 
         // Fetch orders
-        const ordersResponse = await fetch('http://146.190.245.42:1337/api/distributor-orders?populate=*');
+        const ordersResponse = await fetch('https://pouchesworldwide.com/strapi/api/distributor-orders?populate=*');
         
         if (!ordersResponse.ok) {
           throw new Error(`Failed to fetch orders: ${ordersResponse.statusText}`);
@@ -35,7 +35,7 @@ const External = ({ userId }) => {
         const products = await fetchProducts();
 
         // Fetch user data
-        const usersResponse = await fetch("http://146.190.245.42:1337/api/users");
+        const usersResponse = await fetch("https://pouchesworldwide.com/strapi/api/users");
         const users = await usersResponse.json();
         const user = users.find(user => user.id === Number(userId));
 
@@ -56,7 +56,7 @@ const External = ({ userId }) => {
           .map(order => {
             const productId = order.product?.id;
             const productItem = products.find(prod => prod.id === productId);
-            const productImageUrl = productItem ? `http://146.190.245.42:1337${productItem.Image?.url}` : '';
+            const productImageUrl = productItem ? `https://pouchesworldwide.com/strapi${productItem.Image?.url}` : '';
             
             return {
               productImageUrl,
