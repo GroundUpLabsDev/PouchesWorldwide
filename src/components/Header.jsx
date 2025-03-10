@@ -148,6 +148,7 @@ const Header = ({ setSearchQuery }) => {
                     {userRole === "retailer" ? (
                       <li>
                         <Link href="/profile/edit">Profile</Link>
+                        <Link href="/retailer/income">Income</Link>
                       </li>
                     ) : (
                       <>

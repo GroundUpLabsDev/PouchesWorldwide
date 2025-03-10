@@ -1,3 +1,5 @@
+import {sendGetRequest} from "@/_config/apiConfig";
+
 export async function fetchProducts(userRole) {
   let products = [];
   let page = 1;
@@ -43,4 +45,14 @@ export async function fetchProducts(userRole) {
   }
 
   return products; // ✅ Always returns a products array (even if empty)
+}
+
+export async  function fetchProduct({productId}) {
+  try {
+    const data = await sendGetRequest('/products', {populate: "*", 'filters[user][id][$eq]': userId});
+    return data;
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+  }
+
 }
