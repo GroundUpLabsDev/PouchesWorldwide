@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { CircleX } from "lucide-react";
 
-const Products = ({ product }) => {
+const Products = ({ product, userId }) => {
   const { id, Name, Image, Selector, documentId } = product;
 
   // Generate the image URL
@@ -10,11 +10,11 @@ const Products = ({ product }) => {
   const fullImageUrl = `https://pouchesworldwide.com/strapi${imageUrl}`;
 
   // Manually set the userId
-  const manualUserId = 42; // Replace this with your desired userId
+  const manualUserId = +userId; // Replace this with your desired userId
 
   const [customPrices, setCustomPrices] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); 
 
   // Quantity and Price Input State
   const [customQuantity, setCustomQuantity] = useState("");
