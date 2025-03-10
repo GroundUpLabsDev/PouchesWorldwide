@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ArrowRight, Search } from "lucide-react";
+import {sendGetRequest} from "@/_config/apiConfig";
 
 const StockTable = ({ onCreateOrderClick }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,12 +27,9 @@ const StockTable = ({ onCreateOrderClick }) => {
     const fetchOrdersData = async () => {
       try {
         // Fetch orders.
-        const ordersResponse = await fetch("https://pouchesworldwide.com/strapi/api/inventories?populate=*");
-        const ordersJson = await ordersResponse.json();
+        const ordersJson = await sendGetRequest('inventories', {populate: "*", 'filters[user][id][$eq]': userId});
         // Filter orders for the logged-in user.
-        const userOrders = ordersJson.data.filter(
-          (order) => order.user && order.user[0].id === userId
-        );
+        const userOrders = ordersJson.data
 
         setOrders(userOrders);
       } catch (error) {
