@@ -1,4 +1,4 @@
-export const STRAPI_URL = "https://pouchesworldwide.com/strapi/api/";
+export const STRAPI_URL = "https://pouchesworldwide.com/strapi/api";
 
 
 export async function sendJsonPostRequest(
