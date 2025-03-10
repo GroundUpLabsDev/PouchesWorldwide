@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 
 
 export default function InventoryTabs() {
-  const [activeTab, setActiveTab] = useState("stock");
+  const [activeTab, setActiveTab] = useState("earnings");
 
   return (
     <>
