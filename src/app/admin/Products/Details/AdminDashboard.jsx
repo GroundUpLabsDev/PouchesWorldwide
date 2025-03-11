@@ -31,6 +31,13 @@ export default function AdminDashboard() {
   const [image, setImage] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imageId, setImageId] = useState(null); // Store the image ID
+  const [brands, setBrands] = useState([]);
+  const [flavors, setFlavors] = useState([]);
+  const [strengthsOptions, setStrengthsOptions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+const [selectedFlavor, setSelectedFlavor] = useState("");
 
   
 
@@ -77,6 +84,48 @@ export default function AdminDashboard() {
 
     loadProduct();
   }, [ProductID]);
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        // Fetch brands
+        const brandsRes = await fetch("https://pouchesworldwide.com/strapi/api/brands");
+        const brandsData = await brandsRes.json();
+        setBrands(brandsData.data);
+  
+        // Fetch flavors
+        const flavorsRes = await fetch("https://pouchesworldwide.com/strapi/api/flavors");
+        const flavorsData = await flavorsRes.json();
+        setFlavors(flavorsData.data);
+  
+        // Fetch strengths
+        const strengthsRes = await fetch("https://pouchesworldwide.com/strapi/api/strengths");
+        const strengthsData = await strengthsRes.json();
+        setStrengthsOptions(strengthsData.data);
+  
+        // Fetch categories
+        const categoriesRes = await fetch("https://pouchesworldwide.com/strapi/api/categories");
+        const categoriesData = await categoriesRes.json();
+        setCategories(categoriesData.data);
+      } catch (error) {
+        console.error("Error fetching options:", error);
+      }
+    };
+  
+    fetchOptions();
+  }, []);
+
+  const [selectedStrengths, setSelectedStrengths] = useState([]);
+
+  const handleAddStrength = (strength) => {
+    if (!selectedStrengths.includes(strength)) {
+      setSelectedStrengths([...selectedStrengths, strength]);
+    }
+  };
+  
+  const handleRemoveStrength = (strength) => {
+    setSelectedStrengths(selectedStrengths.filter((s) => s !== strength));
+  };
 
   // Handle image upload
   const handleImageChange = async (e) => {
@@ -126,47 +175,52 @@ export default function AdminDashboard() {
 
   // Handle product creation/update
   const handleAdd = async () => {
-    const payload = {
-      Name: productName,
-      Stock: Number(productStock),
-      price: Number(price),
-      Description: [
-        {
-          type: "paragraph",
-          children: [{ type: "text", text: description }],
-        },
-      ],
-      Image: imageId, // Use the image ID here
-      can: Number(cans),
-      selectorj: selectorData,
-      Guidelines: guidelines.map((guideline) => ({
+  const payload = {
+    Name: productName,
+    Stock: Number(productStock),
+    price: Number(price),
+    Description: [
+      {
         type: "paragraph",
-        children: [{ type: "text", text: guideline }],
-      })),
-    }; 
-
-    try {
-      const res = await fetch("https://pouchesworldwide.com/strapi/api/products/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: payload }),
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Failed to create product: ${errorText}`);
-      }
-
-      const result = await res.json();
-      console.log("Product created:", result);
-      setProduct(result.data);
-    } catch (error) {
-      console.error("Error creating product:", error);
-    }
+        children: [{ type: "text", text: description }],
+      },
+    ],
+    Image: imageId,
+    can: Number(cans),
+    selectorj: selectorData,
+    Guidelines: guidelines.map((guideline) => ({
+      type: "paragraph",
+      children: [{ type: "text", text: guideline }],
+    })),
+    brand: selectedBrand, // Use selected brand
+    category: selectedCategory, // Use selected category
+    flavor: selectedFlavor, // Use selected flavor
+    strength: selectedStrengths.map((s) => s.id), // Array of strength IDs
   };
 
+  try {
+    const res = await fetch("https://pouchesworldwide.com/strapi/api/products?populate=*", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: payload }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to create product: ${errorText}`);
+    }
+
+    const result = await res.json();
+    console.log("Product created:", result);
+    setProduct(result.data);
+   // ✅ Show success alert
+   window.alert("🎉 Product added successfully!");
+  } catch (error) {
+    console.error("Error creating product:", error);
+  }
+};
   // Guideline handlers
   const handleAddGuideline = () => {
     if (guidelines.length < MAX_GUIDELINES) {
@@ -253,33 +307,149 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Product Details Section */}
-            <div className="card flex-grow place-items-center">
-              <div className="bg-white p-8 rounded-lg">
-                <p className="opacity-50 text-black text-sm font-semibold">What Is This Product</p>
-                <input
-                  type="text"
-                  placeholder="Product Name"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  className="text-[#3f6075] text-lg font-semibold mb-4 border placeholder-gray-500 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <div className="divider"></div>
-                <div className="h-[44.18px] flex justify-start items-end gap-1 inline-flex">
-                  <input
-                    type="text"
-                    value={cans}
-                    onChange={(e) => setCans(e.target.value)}
-                    className="text-[#39527d] text-[28px] w-[98px] font-medium font-['Poppins'] capitalize border rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#39527d]"
-                  />
-                  <span className="text-[#3e5f75] text-[28px] font-medium font-['Poppins'] capitalize">
-                    {" "}
-                    pouches{" "}
-                  </span>
-                  <span className="text-[#3e5f75] text-sm font-medium font-['Poppins'] capitalize">
-                    in a can
-                  </span>
-                </div>
+           {/* Product Details Section */}
+<div className="card flex-grow place-items-center">
+  <div className="bg-white p-8 rounded-lg">
+    <p className="opacity-50 text-black text-sm font-semibold">What Is This Product</p>
+    
+    {/* Product Name Input */}
+    <input
+      type="text"
+      placeholder="Product Name"
+      value={productName}
+      onChange={(e) => setProductName(e.target.value)}
+      className="text-[#3f6075] text-lg font-semibold mb-4 border placeholder-gray-500 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
+    />
+    
+    {/* Category & Brand Selectors */}
+{/* Category & Brand Selectors */}
+<div className="grid grid-cols-2 gap-4 mb-4">
+  {/* Category Selector */}
+<div className="flex flex-col">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Category</label>
+  <div className="relative">
+    <select
+     value={selectedCategory}
+     onChange={(e) => setSelectedCategory(e.target.value)}
+      className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+    >
+      <option value="" disabled selected>Select a category</option>
+      {categories.map((category) => (
+        <option key={category.id} value={category.id}>
+          {category.Name}
+        </option>
+      ))}
+    </select>
+    <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
+      ▼
+    </span>
+  </div>
+</div>
+
+  {/* Brand Selector */}
+<div className="flex flex-col">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Brand</label>
+  <div className="relative">
+    <select
+       value={selectedBrand}
+       onChange={(e) => setSelectedBrand(e.target.value)}
+      className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+    >
+      <option value="" disabled selected>Select a brand</option>
+      {brands.map((brand) => (
+        <option key={brand.id} value={brand.id}>
+          {brand.name}
+        </option>
+      ))}
+    </select>
+    <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
+      ▼
+    </span>
+  </div>
+</div>
+</div>
+
+
+    {/* Flavor & Strength Selectors */}
+    <div className="grid grid-cols-2 gap-4 mb-4">
+  {/* Flavor Selector */}
+<div className="flex flex-col">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Flavor</label>
+  <div className="relative">
+    <select
+      value={selectedFlavor}
+      onChange={(e) => setSelectedFlavor(e.target.value)}
+      className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+    >
+      <option value="" disabled selected>Select a flavor</option>
+      {flavors.map((flavor) => (
+        <option key={flavor.id} value={flavor.id}>
+          {flavor.name}
+        </option>
+      ))}
+    </select>
+    <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
+      ▼
+    </span>
+  </div>
+</div>
+
+  <div className="flex flex-col">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Strength</label>
+  <div className="flex flex-wrap gap-2">
+    {selectedStrengths.map((strength) => (
+      <div
+        key={strength.id}
+        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center gap-2"
+      >
+        <span>{strength.name}</span>
+        <button
+          onClick={() => handleRemoveStrength(strength)}
+          className="text-red-500 hover:text-red-700"
+        >
+          &times;
+        </button>
+      </div>
+    ))}
+  </div>
+  <select
+    onChange={(e) => {
+      const selectedStrength = strengthsOptions.find(
+        (s) => s.id === Number(e.target.value)
+      );
+      if (selectedStrength) handleAddStrength(selectedStrength);
+    }}
+    className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+  >
+    <option value="" disabled selected>Select a strength</option>
+    {strengthsOptions.map((strength) => (
+      <option key={strength.id} value={strength.id}>
+        {strength.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+</div>
+
+
+    <div className="divider"></div>
+
+    {/* Cans & Pouches Input */}
+    <div className="h-[44.18px] flex justify-start items-end gap-1 inline-flex">
+      <input
+        type="text"
+        value={cans}
+        onChange={(e) => setCans(e.target.value)}
+        className="text-[#39527d] text-[28px] w-[98px] font-medium font-['Poppins'] capitalize border rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#39527d]"
+      />
+      <span className="text-[#3e5f75] text-[28px] font-medium font-['Poppins'] capitalize">
+        pouches
+      </span>
+      <span className="text-[#3e5f75] text-sm font-medium font-['Poppins'] capitalize">
+        in a can
+      </span>
+    </div>
                 <div className="divider"></div>
                 <p className="opacity-50 text-black text-sm font-semibold capitalize">
                   How many items in the stock
