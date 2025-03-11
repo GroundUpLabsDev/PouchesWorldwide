@@ -170,6 +170,12 @@ const ProductCard = ({ product }) => {
             </figure>
           </Link>
 
+          {
+            product.Stock == 0 &&
+            (<div className="absolute right-10 top-10 bg-red-700 text-white py-2 px-3 rounded-md">
+            <p>Out Of Stock</p>
+          </div>)}
+
           {/* Card Content */}
           <div className="card-body p-6 flex flex-col flex-grow">
             <div className="flex flex-col items-center">
