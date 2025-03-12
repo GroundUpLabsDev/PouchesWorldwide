@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import React, { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
@@ -11,12 +12,12 @@ const EarningsSummary = () => {
   useEffect(() => {
     async function fetchReferrals() {
       if (typeof window === "undefined") return;
-
+ 
       // Retrieve user ID from localStorage
       const storedUser = localStorage.getItem("user");
       if (!storedUser) return;
  
-      const { id } = JSON.parse(storedUser);
+      const { id } = JSON.parse(storedUser); 
 
       try {
         // Fetch the logged-in user details
@@ -71,52 +72,53 @@ const EarningsSummary = () => {
     }
   }; 
 
-const fetchTransactions = async () => {
-  try {
-    const response = await fetch(
-      "https://pouchesworldwide.com/strapi/api/all-orders?populate=*"
-    );
-    const { data } = await response.json();
-    
-    if (!userData?.id) return; // Ensure userData is available before filtering
-
-    const filteredTransactions = data.filter(
-      (order) =>
-        order.assigned?.[0]?.id === userData.id && order.astatus === "FULL FILLED"
-    );
-    
-    const ReferTransactions = data.filter(
-      (order) =>
-        order.user?.referEmail === userData.email && order.astatus === "FULL FILLED"
-    );
-    
-    // Merge both filteredTransactions and ReferTransactions
-    const mergedTransactions = [...filteredTransactions, ...ReferTransactions];
-    
-    const formattedTransactions = mergedTransactions.map((order, index, array) => {
-      // Find the first occurrence of the order
-      const firstOccurrenceIndex = array.findIndex(o => o.id === order.id);
-    
-      return {
-        type: order.type || "unknown",
-        id: order.id || "#N/A",
-        amount: order.commission ? `${order.commission} $` : "0 $",
-        earning_type:
-          firstOccurrenceIndex === index
-            ? "referral"
-            : order.contingency
-            ? "contingency"
-            : "earning",
-      };
-    });
-    
-
-
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch(
+        "https://pouchesworldwide.com/strapi/api/all-orders?populate=*"
+      );
+      const { data } = await response.json();
+  
+      if (!userData?.id) return; // Ensure userData is available before filtering
+  
+      // Orders directly assigned to the logged-in user
+      const filteredTransactions = data.filter(
+        (order) =>
+          order.assigned?.[0]?.id === userData.id && order.astatus === "FULL FILLED"
+      );
+  
+      // Orders from users referred by the logged-in user
+      const ReferTransactions = data.filter(
+        (order) =>
+          order.astatus === "FULL FILLED" &&
+          (order.user?.referEmail === userData.email || order.user?.referEmail === null) // Handle null case
+      );
+  
+      // Merge both transactions
+      const mergedTransactions = [...filteredTransactions, ...ReferTransactions];
+  
+      const formattedTransactions = mergedTransactions.map((order, index, array) => {
+        const firstOccurrenceIndex = array.findIndex(o => o.id === order.id);
+  
+        return {
+          type: order.type || "unknown",
+          id: order.id || "#N/A",
+          amount: order.commission ? `${order.commission} $` : "0 $",
+          earning_type:
+            order.contingency
+              ? "contingency"
+              : order.user?.referEmail === userData.email
+              ? "referral"
+              : "earning", // If referEmail is null, mark as "earning"
+        };
+      });
+  
       setTransactions(formattedTransactions);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }
   };
+  
 
   return (
     <>
@@ -165,8 +167,10 @@ const fetchTransactions = async () => {
                     {txn.type}
                   </td>
                   <td className="text-[#282f44] text-lg font-medium">
-                    Order ID: {txn.id}
-                  </td>
+  <Link href={`/admin/Orders/completed/Details?orderId=${txn.id}`}>
+    Order ID: {txn.id}
+  </Link>
+</td>
                   <td className="text-[#282f44] text-lg font-medium">
                     {txn.amount}
                   </td>
@@ -181,7 +185,7 @@ const fetchTransactions = async () => {
       <TrendingDown className="mr-2" />
       Contingency
     </div>
-  ) : txn.earning_type === "referral" ? ( // Added "eeearn" condition
+  ) : txn.earning_type === "referral" ? ( 
     <div className="flex items-center text-[#009b7c]">
       <TrendingUp className="mr-2" />
       Referral
