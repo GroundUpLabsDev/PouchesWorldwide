@@ -33,7 +33,7 @@ const OrdersTabs = () => {
           }`}
           onClick={() => setActiveTab("tab3")}
         >
-          Admin Orders
+          Admin Assigned Orders
         </button>
         <button
           className={`px-4 py-2 focus:outline-none ${
@@ -41,7 +41,7 @@ const OrdersTabs = () => {
           }`}
           onClick={() => setActiveTab("tab4")}
         >
-         Admin Order History
+         Admin Assigned Order History
         </button>
       </div>
 
