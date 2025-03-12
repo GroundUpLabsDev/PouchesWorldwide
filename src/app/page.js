@@ -32,6 +32,8 @@ export default function Home() {
       router.push("/inventory"); // Redirect to /inventory if userRole is "distributor"
     } else if (role === "admin") {
       router.push("/admin"); // Redirect to /admin if userRole is "admin"
+    } else if (role === "wholesaler") {
+      router.push("/shop"); // Redirect to /shop if userRole is "wholesaler"
     } else {
       const getProducts = async () => {
         const fetchedProducts = await fetchProducts();
@@ -42,6 +44,7 @@ export default function Home() {
       getProducts();
     }
   }, [router]); // Make sure to run this only when the router is ready
+
 
   if (loading) {
     return <Preloader />; // Show preloader while loading
@@ -79,11 +82,11 @@ export default function Home() {
     <PrimaryList />
   </div>
 
-  {/* Main banner */}
-  <div><BlackBanner /></div>
+  {/* Main banner 
+  <div><BlackBanner /></div>*/}
 
  {/* Split section */}
-<div className="flex flex-col md:flex-row-reverse p-4 md:p-6 lg:p-4 justify-center items-center mt-[150px] mb-8 mx-auto max-w-[1220px]">
+<div className="flex flex-col md:flex-row-reverse p-4 md:p-6 lg:p-4 justify-center items-center mt-[50px] mb-8 mx-auto max-w-[1220px]">
 
 {/* Product Cards - Left Side */}
 <div className="w-full md:w-1/2 flex justify-center">
