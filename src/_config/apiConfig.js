@@ -78,7 +78,7 @@ export async function sendGetRequest(
   try {
     data_ = await response.json();
     return {
-      status: data_.status,
+      status: "success",
       data: data_.data ?? data_.error,
       message: data_.message ?? null,
     };
@@ -124,7 +124,7 @@ export async function sendDeleteRequest(
   try {
     data_ = await response.json();
     return {
-      status: data_.status,
+      status: "success",
       data: data_.data ?? data_.error,
       message: data_.message ?? null,
     };
@@ -168,7 +168,7 @@ export async function sendJsonPatchRequest(
   try {
     data_ = await response.json();
     return {
-      status: data_.status,
+      status: "success",
       data: data_.data ?? data_.error,
       message: data_.message ?? null,
     };
