@@ -20,7 +20,7 @@ const StarRating = ({ rating }) => (
 );
 
 const FeedbackCard = ({ name, rating, verified, date, feedback, avatar, expanded, onToggle }) => (
-  <div className="w-72 mx-auto bg-black shadow-lg p-4 rounded-lg transform transition-all duration-300">
+  <div className="w-full sm:w-72 mx-auto bg-black shadow-lg p-4 rounded-lg transform transition-all duration-300">
     {/* User Info Section */}
     <div className="flex items-center gap-3">
       <div className="w-12 h-12 rounded-full overflow-hidden">
@@ -72,11 +72,19 @@ const FeedbackCard = ({ name, rating, verified, date, feedback, avatar, expanded
 
 const InfiniteScroll = ({ children }) => (
   <div className="relative overflow-hidden py-4 w-full">
-    <div className="absolute left-0 top-0 w-1/4 h-full bg-gradient-to-r from-black/90 via-transparent to-transparent z-10 shadow-lg" />
-    <div className="absolute right-0 top-0 w-1/4 h-full bg-gradient-to-l from-black/90 via-transparent to-transparent z-10" />
-    <div className="flex animate-scroll">
-      <div className="flex gap-4 min-w-full sm:w-auto sm:flex-nowrap px-4">{children}</div>
-      <div className="flex gap-4 min-w-full sm:w-auto sm:flex-nowrap px-4">{children}</div>
+    {/* Side gradients for larger screens */}
+    <div className="absolute left-0 top-0 hidden sm:block w-1/4 h-full bg-gradient-to-r from-black/90 via-transparent to-transparent z-10 shadow-lg" />
+    <div className="absolute right-0 top-0 hidden sm:block w-1/4 h-full bg-gradient-to-l from-black/90 via-transparent to-transparent z-10" />
+
+    {/* Mobile: Manual horizontal scroll */}
+    <div className="sm:hidden flex gap-4 overflow-x-auto px-4">
+      {children}
+    </div>
+
+    {/* Larger screens: Infinite scroll */}
+    <div className="hidden sm:flex animate-scroll">
+      <div className="flex gap-4 w-full sm:w-auto sm:flex-nowrap px-4">{children}</div>
+      <div className="flex gap-4 w-full sm:w-auto sm:flex-nowrap px-4">{children}</div>
     </div>
   </div>
 );
