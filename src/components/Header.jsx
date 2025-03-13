@@ -154,6 +154,7 @@ const Header = ({ setSearchQuery }) => {
                       <>
                         <li>
                           <Link href="/profile/edit">Profile</Link>
+                          
                         </li>
                         <li>
                           <Link
@@ -165,7 +166,7 @@ const Header = ({ setSearchQuery }) => {
                                 : "#"
                             }
                           >
-                            Inventory
+                            Dashboard
                           </Link>
                         </li>
                       </>
