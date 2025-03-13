@@ -5,9 +5,9 @@
 import Image from 'next/image';
 import { useState, useEffect } from "react";
 import { ArrowRight } from 'lucide-react';
-import { fetchProducts } from "@/app/utils/fetchProducts";
+import {fetchProduct, fetchProducts} from "@/app/utils/fetchProducts";
 
-const CreateOrder = ({ productId }) => {
+const CreateOrder = ({productId}) => {
   const [productDetails, setProductDetails] = useState(null);
   const [formData, setFormData] = useState({
     customerName: "",
@@ -40,37 +40,22 @@ const CreateOrder = ({ productId }) => {
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        // Fetch products from API
-        const products = await fetchProducts();
-        console.log("Fetched Products:", products); // Log the products to verify the data
-
-        // Find the product by ID
-        const product = products.find(p => p.id === productId);
-        if (product) {
-          setProductDetails({
-            flavour: product.category.Name,
-            product: product.Name,
-            stock: product.Stock,
-            unitPrice: product.price,
-            img: product.Image.url
-          });
-        } else {
-          console.log("Product not found");
+        if (productId) {
+          console.log("Fetching product details for ID:", productId);
+          const product = await fetchProduct({ productId: productId });
+          setProductDetails(product);
         }
       } catch (error) {
         console.error("Error fetching product details:", error);
       }
     };
 
-    if (productId) {
-      fetchProductDetails();
-    }
+    fetchProductDetails();
   }, [productId]);
 
-  if (!productDetails) {
-    return <div>Loading product details...</div>;
+  if(!productDetails) {
+    return <div>Loading...</div>;
   }
-
   return (
     <>
       <div className="w-[540px] text-[#fab12f] text-[32px] font-semibold font-['Poppins'] ml-8">
