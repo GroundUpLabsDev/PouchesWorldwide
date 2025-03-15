@@ -18,3 +18,4 @@ yarn-error.log*
 
 # Local development
 .DS_Store
+.qodo

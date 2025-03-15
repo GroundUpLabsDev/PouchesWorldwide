@@ -35,13 +35,19 @@ const PendingCard = ({ order }) => {
             <span className="bg-black text-white text-sm font-semibold font-['Poppins'] rounded w-[100px] h-[29px] flex items-center justify-center px-1.5 py-1">
               {order.type}
             </span>
-            {(order.method === "Contingency" || order.method === "Crypto") && (
-    <span className={`text-white text-sm font-semibold font-['Poppins'] rounded w-[100px] h-[29px] flex items-center justify-center px-1.5 py-1 ${
-      order.method === "Contingency" ? "bg-[#fa4032]" : "bg-[#32a852]"
-    }`}>
-      {order.method}
-    </span>
-  )}
+            {(order.method === "Contingency" || order.method === "Crypto" || order.method === "Stripe") && (
+  <span
+    className={`text-white text-sm font-semibold font-['Poppins'] rounded w-[100px] h-[29px] flex items-center justify-center px-1.5 py-1 ${
+      order.method === "Contingency"
+        ? "bg-[#fa4032]"
+        : order.method === "Crypto"
+        ? "bg-[#32a852]"
+        : "bg-[#6772e6]" // Purple for Card
+    }`}
+  >
+    {order.method}
+  </span>
+)}
           </div>
 
           <div className="mt-2">
@@ -147,7 +153,7 @@ const PendingCard = ({ order }) => {
         placeholder="Customer’s Email"
         type="email"
         name="customerEmail"
-        value={order.email}
+        value={order.method === "Stripe" ? order.stripe : order.email}
         disabled
       />
       {/* Customer Mobile */}

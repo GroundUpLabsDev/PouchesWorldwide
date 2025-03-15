@@ -12,7 +12,7 @@ const EarningsSummary = () => {
   useEffect(() => {
     async function fetchReferrals() {
       if (typeof window === "undefined") return;
- 
+
       // Retrieve user ID from localStorage
       const storedUser = localStorage.getItem("user");
       if (!storedUser) return;

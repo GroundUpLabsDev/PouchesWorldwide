@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Import custom pages/components for each tab (you can replace these with real components later)
 import ProfilePage from "@/app/admin/whalesellers/sellerDetails/[userId]/profile/page";
@@ -13,6 +13,19 @@ import TransactionsPage from "@/app/admin/whalesellers/sellerDetails/[userId]/tr
 
 export default function TabNavigation({ userId }) {
   const [activeTab, setActiveTab] = useState("Profile");
+
+  // Load the active tab from localStorage when the component mounts
+  useEffect(() => {
+    const savedTab = localStorage.getItem("activeTab");
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
+  // Save the active tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 mt-12">

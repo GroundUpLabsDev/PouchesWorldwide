@@ -19,7 +19,7 @@ const CuCheckoutForm = () => {
     const totalAmount = parseFloat(totalPrice) + tax + deliveryFee;
     
     const [userRole, setUserRole] = useState(null);
-    const [itemTotal, setItemTotal] = useState(0);
+    const [itemTotal, setItemTotal] = useState(0); 
     const [itemId, setItemId] = useState(null);
     const [quantity, setQuantity] = useState(null);
     const [selectedCans, setSelectedCans] = useState([]);
@@ -30,6 +30,8 @@ const CuCheckoutForm = () => {
      useEffect(() => {
         setUserRole(getUserRole());
       }, []);
+
+      
 
     useEffect(() => {
         const cartData = searchParams.get('cartData');
@@ -124,7 +126,7 @@ const CuCheckoutForm = () => {
                 itemTotal: selectedCans,
                 cart: cart, // Including entire cart data as JSON
                 type: "Retailer",
-                ...(method === "Card" && {
+                ...(method === "Stripe" && {
                     timeline: [
                         {
                             title: "Payment Successful",
@@ -176,8 +178,8 @@ const CuCheckoutForm = () => {
     
             // Redirect to payment based on method
             let url = "/";
-            if (method === "Card") {
-                url = `/payment?totalPrice=${totalPrice}&email=${formData.email}&id=${orderId}`;
+            if (method === "Stripe") {
+                url = `/payment/stripe/?totalPrice=${totalPrice}&email=${formData.email}&id=${orderId}`;
             } else if (method === "Crypto") {
                 url = `/payment/crypto/?totalPrice=${totalPrice}&email=${formData.email}&id=${orderId}`;
             } else if (method === "Cod") {
@@ -371,26 +373,26 @@ const CuCheckoutForm = () => {
                         </div>
                         <h2 className="text-lg font-semibold text-primary mb-4">Payment Options</h2>
                         <div className="space-y-4">
-                            {/* Card Option 
+                            {/* Stripe Option */}
                             <div
                                 className={`flex items-center p-4 border rounded-lg ${
-                                    method === 'Card' ? 'bg-yellow-100 border-yellow-300' : 'bg-white'
+                                    method === 'Stripe' ? 'bg-yellow-100 border-yellow-300' : 'bg-white'
                                 } cursor-pointer`}
-                                onClick={() => setMethod('Card')}
+                                onClick={() => setMethod('Stripe')}
                             >
-                                <div className="w-[80px] h-[53.65px] mr-4 bg-yellow-500 rounded-lg flex items-center justify-center text-white font-bold">
-                                    VISA
+                                <div className="w-[80px] h-[53.65px] mr-4 bg-[#6772e6] rounded-lg flex items-center justify-center text-white font-bold">
+                                    STRIPE
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-gray-800 font-semibold">Card</h3>
-                                    <p className="text-gray-600 text-sm">Credit / Debit</p>
+                                    <h3 className="text-gray-800 font-semibold">Stripe</h3>
+                                    <p className="text-gray-600 text-sm">Stripe Payment</p>
                                 </div>
-                                {method === 'Card' ? (
+                                {method === 'Stripe' ? ( 
                                     <CheckCircle className="text-yellow-500 text-2xl" />
                                 ) : (
                                     <Circle className="text-gray-400 text-2xl" />
                                 )}
-                            </div>*/}
+                            </div>
 
                             {/* Crypto Option */}
                             <div

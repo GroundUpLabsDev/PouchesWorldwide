@@ -82,9 +82,9 @@ const InfiniteScroll = ({ children }) => (
     </div>
 
     {/* Larger screens: Infinite scroll */}
-    <div className="hidden sm:flex animate-scroll">
-      <div className="flex gap-4 w-full sm:w-auto sm:flex-nowrap px-4">{children}</div>
-      <div className="flex gap-4 w-full sm:w-auto sm:flex-nowrap px-4">{children}</div>
+    <div className="hidden sm:flex overflow-hidden">
+      <div className="flex gap-4 w-full sm:w-auto sm:flex-nowrap px-4 animate-scroll">{children}</div>
+      <div className="flex gap-4 w-full sm:w-auto sm:flex-nowrap px-4 animate-scroll">{children}</div>
     </div>
   </div>
 );

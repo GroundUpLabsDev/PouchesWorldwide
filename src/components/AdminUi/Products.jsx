@@ -65,7 +65,7 @@ const Products = ({ product, userId }) => {
     (entry) =>
       !removedEntries.some(
         (removed) =>
-          removed.quantity === entry.Cans && removed.price === entry.Price
+          removed.Cans === entry.Cans && removed.Price === entry.Price
       )
   );
 
@@ -83,8 +83,8 @@ const Products = ({ product, userId }) => {
 
   // Remove a custom entry
   const removeCustomEntry = (index) => {
-    const removedEntry = pricesToUse[index];
-    setRemovedEntries([...removedEntries, removedEntry]); // Track removed entries
+    const entryToRemove = pricesToUse[index];
+    setRemovedEntries([...removedEntries, entryToRemove]); // Track removed entries
   };
 
   // Save custom prices
@@ -120,6 +120,7 @@ const Products = ({ product, userId }) => {
 
       alert("Prices saved successfully!");
       setRemovedEntries([]); // Clear removed entries after successful save
+      window.location.reload();
     } catch (error) {
       console.error("Error saving prices:", error);
     }

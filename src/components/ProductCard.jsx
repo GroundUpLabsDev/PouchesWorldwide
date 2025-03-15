@@ -26,6 +26,9 @@ const ProductCard = ({ product }) => {
   const [selectedCans, setSelectedCans] = useState(defaultSelection.Cans);
   const [currentPrice, setCurrentPrice] = useState(defaultSelection.Price);
 
+  // State for selected quantities (mg) and their counts
+  const [selectedQuantities, setSelectedQuantities] = useState([]);
+
   useEffect(() => {
     // Fetch user role & username
     const fetchUserRole = async () => {
@@ -73,18 +76,26 @@ const ProductCard = ({ product }) => {
 
       // Find the user's custom prices
       const userProduct = data.data.wprice.find((wp) => wp.user.id === userId);
-      if (userProduct) {
-        setCustomPrices(userProduct.price); // Set custom prices if available
 
-        // Automatically select the first option from custom prices
-        if (userProduct.price.length > 0) {
+      if (userProduct) {
+        // Check if custom prices are valid (not empty or null)
+        if (userProduct.price && userProduct.price.length > 0 && userProduct.price[0].Price !== null) {
+          setCustomPrices(userProduct.price); // Set custom prices if valid
+
+          // Automatically select the first option from custom prices
           setSelectedCans(userProduct.price[0].Cans);
           setCurrentPrice(userProduct.price[0].Price);
+        } else {
+          // Fallback to default pricing if custom prices are invalid
+          setCustomPrices(null);
+          if (sortedSelector.length > 0) {
+            setSelectedCans(sortedSelector[0].Cans);
+            setCurrentPrice(sortedSelector[0].Price);
+          }
         }
       } else {
-        setCustomPrices(null); // No custom prices for this user
-
-        // Automatically select the first option from default Selector
+        // No custom prices for this user, fallback to default pricing
+        setCustomPrices(null);
         if (sortedSelector.length > 0) {
           setSelectedCans(sortedSelector[0].Cans);
           setCurrentPrice(sortedSelector[0].Price);
@@ -111,6 +122,41 @@ const ProductCard = ({ product }) => {
     const selectedOption = pricesToUse.find((item) => item.Cans === selectedCans);
     setCurrentPrice(selectedOption ? selectedOption.Price : 0);
   }, [customPrices, selectedCans, pricesToUse]);
+
+  // Handle quantity button click
+  const handleQuantityClick = (mg) => {
+    setSelectedQuantities((prev) => {
+      const existingIndex = prev.findIndex((item) => item.mg === mg);
+      if (existingIndex >= 0) {
+        // If the quantity already exists, increment its count
+        const updatedQuantities = [...prev];
+        updatedQuantities[existingIndex].count += 1;
+        return updatedQuantities;
+      } else {
+        // If the quantity doesn't exist, add it with a count of 1
+        return [...prev, { mg, count: 1 }];
+      }
+    });
+  };
+
+  // Handle increment and decrement for a specific quantity
+  const handleIncrement = (mg) => {
+    setSelectedQuantities((prev) =>
+      prev.map((item) =>
+        item.mg === mg ? { ...item, count: item.count + 1 } : item
+      )
+    );
+  };
+
+  const handleDecrement = (mg) => {
+    setSelectedQuantities((prev) =>
+      prev
+        .map((item) =>
+          item.mg === mg ? { ...item, count: Math.max(0, item.count - 1) } : item
+        )
+        .filter((item) => item.count > 0) // Remove if count reaches 0
+    );
+  };
 
   // Skeleton Loader Component
   const SkeletonLoader = () => (
@@ -149,12 +195,35 @@ const ProductCard = ({ product }) => {
     </div>
   );
 
+  // Handle Add to Cart
+  const handleAddToCart = () => {
+    if (selectedQuantities.length === 0) {
+      setError("Please select at least one strength.");
+      return;
+    }
+
+    // Create separate orders for each selected strength
+    selectedQuantities.forEach((item) => {
+      const order = {
+        ...product,
+        price: currentPrice,
+        strength: item.mg,
+        count: item.count,
+        imageUrl: fullImageUrl,
+      };
+      addToCart(order); // Add each order to the cart
+    });
+
+    // Reset selected quantities after adding to cart
+    setSelectedQuantities([]);
+  };
+
   return (
     <>
       {loading ? (
         <SkeletonLoader />
       ) : (
-        <div className="card w-[297px] h-[470px] bg-neutral shadow-xl relative flex flex-col cursor-pointer">
+        <div className="card w-[300px] bg-neutral shadow-xl relative flex flex-col cursor-pointer">
           {/* Product Link */}
           <Link href={`/product/${id}`} passHref>
             <figure className="px-8 pt-6">
@@ -170,12 +239,6 @@ const ProductCard = ({ product }) => {
             </figure>
           </Link>
 
-          {
-            product.Stock == 0 &&
-            (<div className="absolute right-10 top-10 bg-red-700 text-white py-2 px-3 rounded-md">
-            <p>Out Of Stock</p>
-          </div>)}
-
           {/* Card Content */}
           <div className="card-body p-6 flex flex-col flex-grow">
             <div className="flex flex-col items-center">
@@ -190,11 +253,6 @@ const ProductCard = ({ product }) => {
                   {Name}
                 </h2>
               </Link>
-
-              {/* Display Document ID 
-              <div className="text-sm text-gray-400">
-                Document ID: {documentId}
-              </div>*/}
 
               {/* Rating Stars */}
               <div className="flex justify-center mt-2">
@@ -217,32 +275,93 @@ const ProductCard = ({ product }) => {
 
             {/* Product Details */}
             <div className="flex justify-between items-center mt-4">
-              <select
-                className="select select-bordered select-md w-32"
-                value={selectedCans}
-                onChange={handleQuantityChange}
-              >
-                {pricesToUse.map((option) => (
-                  <option key={option.id} value={option.Cans}>
-                    {option.Cans} Cans
-                  </option>
-                ))}
-              </select>
+              <span className="text-xl font-semibold">Price Per Unit</span>
               <span className="text-xl font-semibold">${currentPrice.toFixed(2)}</span>
+            </div>
+
+            {/* Quantity Buttons */}
+            <div className="flex flex-col gap-4 mt-4">
+              {/* Top Row: 6mg, 12mg, 16mg */}
+              <div className="flex justify-between">
+                {[6, 12, 16].map((mg) => {
+                  const selectedItem = selectedQuantities.find((item) => item.mg === mg);
+                  return (
+                    <div key={mg} className="flex flex-col items-center">
+                      <button
+                        onClick={() => handleQuantityClick(mg)}
+                        className={`btn-sm rounded-lg w-[75px] h-[5px] ${
+                          selectedItem
+                            ? "bg-[#54a9d1] text-white text-bold"
+                            : "bg-gray-300"
+                        } border-none text-base `}
+                      >
+                        {mg}mg
+                      </button>
+                      {selectedItem && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <button
+                            onClick={() => handleDecrement(mg)}
+                            className="bg-gray-300 text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <span className="text-base font-semibold">{selectedItem.count}</span>
+                          <button
+                            onClick={() => handleIncrement(mg)}
+                            className="bg-gray-300 text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Bottom Row: 22mg */}
+              <div className="flex justify-center">
+                {[22].map((mg) => {
+                  const selectedItem = selectedQuantities.find((item) => item.mg === mg);
+                  return (
+                    <div key={mg} className="flex flex-col items-center">
+                      <button
+                        onClick={() => handleQuantityClick(mg)}
+                        className={`btn-sm rounded-lg w-[250px] ${
+                          selectedItem
+                            ? "bg-[#54a9d1] text-white text-bold"
+                            : "bg-gray-300"
+                        } border-none text-sm  px-3 py-2`}
+                      >
+                        {mg}mg
+                      </button>
+                      {selectedItem && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <button
+                            onClick={() => handleDecrement(mg)}
+                            className="bg-gray-300 text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <span className="text-base font-semibold">{selectedItem.count}</span>
+                          <button
+                            onClick={() => handleIncrement(mg)}
+                            className="bg-gray-300 text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Add to Cart Button */}
             <button
               className="btn bg-[radial-gradient(circle,_#fae255_0%,_#a06a0f_100%)] border-none text-sm px-3 py-2 w-full mt-2 mb-6"
-              onClick={(e) => {
-                e.preventDefault();
-                addToCart({
-                  ...product,
-                  price: currentPrice,
-                  selectedCans,
-                  imageUrl: fullImageUrl,
-                });
-              }}
+              onClick={handleAddToCart}
             >
               Add To Cart +
             </button>

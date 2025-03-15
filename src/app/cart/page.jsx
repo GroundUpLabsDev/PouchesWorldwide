@@ -218,12 +218,12 @@ const CartPage = () => {
                         </div>
 
                         <div className="absolute left-[225px] top-[26px] text-center text-black text-[22px] font-medium font-['Poppins'] capitalize">
-                          {product.Name}
+                          {product.Name} {product.strength}mg
                         </div>
 
                         <div className="absolute left-[226px] top-[75px] text-[#2f4858] text-base font-medium font-['Poppins'] leading-snug">
-                          12mg | {product.selectedCans} Cans
-                        </div>
+                          {product.count} 
+                        </div> 
 
                         <div className="absolute left-[224px] top-[124px] flex items-center gap-[19px]">
                           <div className="w-[216px] flex flex-col gap-2">
@@ -233,7 +233,7 @@ const CartPage = () => {
                             <div className="h-[54px] p-3 bg-white rounded-md border border-zinc-200 flex items-center overflow-hidden">
                               <input
                                 type="number"
-                                value={1}
+                                value={product.count} 
                                 readOnly
                                 className="grow text-zinc-500 text-xl font-normal font-['Inter'] leading-7 outline-none"
                               />
@@ -287,7 +287,7 @@ const CartPage = () => {
                           query: {
                             totalPrice: totalPrice.toFixed(2),
                             cartData: JSON.stringify(
-                              cart.map(({ id, selectedCans, quantity, price, Name, imageUrl }) => ({ id, selectedCans, quantity, price, Name, imageUrl }))
+                              cart.map(({ id, selectedCans, quantity, price, Name, imageUrl}) => ({ id, selectedCans, quantity, price, Name, imageUrl}))
                             ),
                           },
                         }}

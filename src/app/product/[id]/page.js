@@ -35,6 +35,9 @@ export default function ProductPage({ params }) {
   const [apiSelector, setApiSelector] = useState(null); // Store API Selector
   const [userRole, setUserRole] = useState(null);
 
+  const [strengths, setStrengths] = useState([]);
+  const [selectedStrength, setSelectedStrength] = useState("");
+
   // Get user role on component mount
   useEffect(() => {
     setUserRole(getUserRole());
@@ -50,6 +53,25 @@ export default function ProductPage({ params }) {
       }
     }
   }, []);
+
+  // Fetch strengths from API
+useEffect(() => {
+  const fetchStrengths = async () => {
+    try {
+      const response = await fetch("https://pouchesworldwide.com/strapi/api/strengths");
+      const data = await response.json();
+      setStrengths(data.data); // Assuming `data.data` holds the array of strengths
+    } catch (error) {
+      console.error("Error fetching strengths:", error);
+    }
+  };
+  fetchStrengths();
+}, []);
+
+// Handle strength selection
+const handleStrengthChange = (event) => {
+  setSelectedStrength(event.target.value);
+};
 
   // Fetch products when the component mounts
   useEffect(() => {
@@ -204,15 +226,43 @@ export default function ProductPage({ params }) {
                 </div>
               </div>
               <div className="divider"></div>
+
+              <div className="mb-4">
+  <label htmlFor="strength-selector" className="block text-gray-700 font-medium">
+    Select Strength:
+  </label>
+  <select
+    id="strength-selector"
+    className="w-full p-2 border rounded-lg"
+    value={selectedStrength}
+    onChange={handleStrengthChange}
+  >
+    <option value="">Choose Strength</option>
+    {strengths.map((strength) => (
+      <option key={strength.id} value={strength.name}> 
+        {strength.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+<div className="divider"></div>
+
+<label htmlFor="strength-selector" className="block text-gray-700 font-medium">
+    Quantity:
+  </label>
+  <input className="text-[#39527d] text-[20px] font-medium font-['Poppins'] capitalize border w-17 rounded-lg p-2"></input>
+  <div className="divider"></div>
+
               <div className="text-black text-[38px] font-bold mt-2 mb-6">${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}</div>
               <div className="divider"></div>
               <div className="space-y-4 mb-6">
                 <p className="text-primary text-[18px]">{description}</p>
-                <Selector
+                {/*    <Selector
                   selectedQuantity={selectedQuantity}
                   setSelectedQuantity={setSelectedQuantity}
                   selectorOptions={selectorToUse}
-                />
+                />*/}
               </div>
               {userRole === "wholesaler" && (
                 <div
@@ -252,7 +302,7 @@ export default function ProductPage({ params }) {
                     </svg>
                   </button>
                 </div>)}
-              
+           
               <div
                 className="w-[244px] px-3 py-2 mt-6 bg-[radial-gradient(circle,_#fae255_0%,_#a06a0f_100%)] rounded-md flex items-end justify-end gap-[10px] cursor-pointer hover:shadow-lg transition-shadow duration-200 ml-auto"
                 onClick={(e) => {
@@ -260,8 +310,10 @@ export default function ProductPage({ params }) {
                   addToCart({
                     ...product,
                     price: currentPrice,
-                    selectedCans: selectedQuantity,
+                    selectedCans: selectedQuantity, 
                     imageUrl: fullImageUrl,
+                    strenth:selectedStrength
+                    
                   });
                 }}
               >

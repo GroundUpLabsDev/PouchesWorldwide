@@ -75,13 +75,19 @@ const ProcessingCard = ({ order }) => {
   <span className="bg-[#e6af2e] text-white text-sm font-semibold font-['Poppins'] rounded-md px-3 py-1 flex items-center justify-center">
       {order.astatus}
     </span>
-    {(order.method === "Contingency" || order.method === "Crypto") && (
-    <span className={`text-white text-sm font-semibold font-['Poppins'] rounded w-[100px] h-[29px] flex items-center justify-center px-1.5 py-1 ${
-      order.method === "Contingency" ? "bg-[#fa4032]" : "bg-[#32a852]"
-    }`}>
-      {order.method}
-    </span>
-    )}
+    {(order.method === "Contingency" || order.method === "Crypto" || order.method === "Stripe") && (
+  <span
+    className={`text-white text-sm font-semibold font-['Poppins'] rounded w-[100px] h-[29px] flex items-center justify-center px-1.5 py-1 ${
+      order.method === "Contingency"
+        ? "bg-[#fa4032]"
+        : order.method === "Crypto"
+        ? "bg-[#32a852]"
+        : "bg-[#6772e6]" // Purple for Card
+    }`}
+  >
+    {order.method}
+  </span>
+)}
   </div>
 
 
@@ -196,7 +202,7 @@ const ProcessingCard = ({ order }) => {
         placeholder="Customer’s Email"
         type="email"
         name="customerEmail"
-        value={order.email}
+        value={order.method === "Stripe" ? order.stripe : order.email}
         disabled
       />
       {/* Customer Mobile */}

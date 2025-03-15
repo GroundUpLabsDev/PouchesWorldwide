@@ -85,72 +85,94 @@ const Shop = () => {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {/* Brand Filter */}
-          <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1">Brand</label>
-            <select
-              value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
-              className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
-            >
-              <option value="">All Brands</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.name}
-                </option>
-              ))}
-            </select>
-          </div>
+<div className="flex flex-col relative">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Brand</label>
+  <div className="relative">
+    <select
+      value={selectedBrand}
+      onChange={(e) => setSelectedBrand(e.target.value)}
+      className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+    >
+      <option value="">All Brands</option>
+      {brands.map((brand) => (
+        <option key={brand.id} value={brand.id}>
+          {brand.name}
+        </option>
+      ))}
+    </select>
+    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600">
+      ▼ {/* You can replace this with an icon */}
+    </span>
+  </div>
+</div>
 
-          {/* Category Filter */}
-          <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1">Category</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.Name}
-                </option>
-              ))}
-            </select>
-          </div>
 
-          {/* Flavor Filter */}
-          <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1">Flavor</label>
-            <select
-              value={selectedFlavor}
-              onChange={(e) => setSelectedFlavor(e.target.value)}
-              className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
-            >
-              <option value="">All Flavors</option>
-              {flavors.map((flavor) => (
-                <option key={flavor.id} value={flavor.id}>
-                  {flavor.name}
-                </option>
-              ))}
-            </select>
-          </div>
+         {/* Category Filter */}
+<div className="flex flex-col relative">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Category</label>
+  <div className="relative">
+    <select
+      value={selectedCategory}
+      onChange={(e) => setSelectedCategory(e.target.value)}
+      className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+    >
+      <option value="">All Categories</option>
+      {categories.map((category) => (
+        <option key={category.id} value={category.id}>
+          {category.Name}
+        </option>
+      ))}
+    </select>
+    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600">
+      ▼ {/* You can replace this with an icon */}
+    </span>
+  </div>
+</div>
 
-          {/* Strength Filter */}
-          <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1">Strength</label>
-            <select
-              value={selectedStrength}
-              onChange={(e) => setSelectedStrength(e.target.value)}
-              className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
-            >
-              <option value="">All Strengths</option>
-              {strengths.map((strength) => (
-                <option key={strength.id} value={strength.id}>
-                  {strength.name}
-                </option>
-              ))}
-            </select>
-          </div>
+
+         {/* Flavor Filter */}
+<div className="flex flex-col relative">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Flavor</label>
+  <div className="relative">
+    <select
+      value={selectedFlavor}
+      onChange={(e) => setSelectedFlavor(e.target.value)}
+      className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+    >
+      <option value="">All Flavors</option>
+      {flavors.map((flavor) => (
+        <option key={flavor.id} value={flavor.id}>
+          {flavor.name}
+        </option>
+      ))}
+    </select>
+    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600">
+      ▼ {/* You can replace this with an icon */}
+    </span>
+  </div>
+</div>
+
+       {/* Strength Filter */}
+<div className="flex flex-col relative">
+  <label className="text-sm font-semibold text-gray-700 mb-1">Strength</label>
+  <div className="relative">
+    <select
+      value={selectedStrength}
+      onChange={(e) => setSelectedStrength(e.target.value)}
+      className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer"
+    >
+      <option value="">All Strengths</option>
+      {strengths.map((strength) => (
+        <option key={strength.id} value={strength.id}>
+          {strength.name}
+        </option>
+      ))}
+    </select>
+    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600">
+      ▼ {/* You can replace this with an icon */}
+    </span>
+  </div>
+</div>
         </div>
 
         <div className="mt-8">
