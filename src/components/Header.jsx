@@ -11,8 +11,7 @@ import Preloader from "@/components/Preloader";
 const Header = ({ setSearchQuery }) => {
   const router = useRouter();
   const cart = useCartStore((state) => state.cart);
-  const cartQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
-
+  const totalItems = useCartStore((state) => state.getTotalItems());
   const [userRole, setUserRole] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -103,9 +102,9 @@ const Header = ({ setSearchQuery }) => {
                   <li>
                     <Link href="/cart" className="relative flex items-center px-4 py-2 rounded-md hover:bg-gray-700">
                       <span>Cart</span>
-                      {cartQuantity > 0 && (
+                      {totalItems > 0 && (
                         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                          {cartQuantity}
+                          {totalItems}
                         </span>
                       )}
                     </Link>
@@ -196,9 +195,9 @@ const Header = ({ setSearchQuery }) => {
               </Link>
               <Link href="/cart" className="relative flex items-center px-4 py-2 rounded-md hover:bg-gray-700">
                 <span>Cart</span>
-                {cartQuantity > 0 && (
+                {totalItems > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                    {cartQuantity}
+                    {totalItems}
                   </span>
                 )}
               </Link>

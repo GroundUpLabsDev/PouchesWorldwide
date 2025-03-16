@@ -201,19 +201,19 @@ const ProductCard = ({ product }) => {
       setError("Please select at least one strength.");
       return;
     }
-
+  
     // Create separate orders for each selected strength
     selectedQuantities.forEach((item) => {
       const order = {
-        ...product,
-        price: currentPrice,
-        strength: item.mg,
-        count: item.count,
-        imageUrl: fullImageUrl,
+        ...product, // Spread the product details
+        price: currentPrice, // Use the current price
+        strength: item.mg, // Strength (e.g., 6mg, 22mg)
+        count: item.count, // Quantity selected for this strength
+        imageUrl: fullImageUrl, // Full image URL
       };
       addToCart(order); // Add each order to the cart
     });
-
+  
     // Reset selected quantities after adding to cart
     setSelectedQuantities([]);
   };

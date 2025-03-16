@@ -1,72 +1,82 @@
 import { create } from "zustand";
 
-const useCartStore = create((set) => ({
+const useCartStore = create((set, get) => ({
   cart: [],
   customOrders: [],
 
+  // Add custom order
   addCustomOrder: (order) =>
     set((state) => ({
-      customOrders: [...state.customOrders, order]
+      customOrders: [...state.customOrders, order],
     })),
 
+  // Remove custom order
   removeCustomOrder: (orderId) =>
     set((state) => ({
-      customOrders: state.customOrders.filter(order => order.id !== orderId)
+      customOrders: state.customOrders.filter((order) => order.id !== orderId),
     })),
 
-  // Updated addToCart: Treat same product with different selectedCans as separate items.
+  // Add to cart: Group items by strength
   addToCart: (product) =>
     set((state) => {
-      // Check if an entry with the same product id and selectedCans exists.
-      const existingProduct = state.cart.find(
-        (item) =>
-          item.id === product.id && item.selectedCans === product.selectedCans
+      const existingProductIndex = state.cart.findIndex(
+        (item) => item.id === product.id && item.strength === product.strength
       );
 
-      if (existingProduct) {
-        // Increase the quantity of the existing product.
-        return {
-          cart: state.cart.map((item) =>
-            item.id === product.id && item.selectedCans === product.selectedCans
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        };
+      if (existingProductIndex >= 0) {
+        // If it exists, update the quantity
+        const updatedCart = [...state.cart];
+        updatedCart[existingProductIndex].count += product.count;
+        return { cart: updatedCart };
       } else {
-        // Add the product as a new entry with quantity 1.
-        return { cart: [...state.cart, { ...product, quantity: 1 }] };
+        // If it doesn't exist, add it as a new order
+        return { cart: [...state.cart, product] };
       }
     }),
 
-  // Remove from cart using both product id and selectedCans to uniquely identify an item.
-  removeFromCart: (productId, selectedCans) =>
+  // Remove from cart: Use product ID and strength to uniquely identify an item
+  removeFromCart: (productId, strength) =>
     set((state) => ({
       cart: state.cart.filter(
-        (item) => !(item.id === productId && item.selectedCans === selectedCans)
-      )
+        (item) => !(item.id === productId && item.strength === strength)
+      ),
     })),
 
-  // Increase quantity for a specific product variant.
-  increaseQuantity: (productId, selectedCans) =>
+  // Update quantity for a specific product variant
+  updateQuantity: (productId, strength, newQuantity) =>
     set((state) => ({
       cart: state.cart.map((item) =>
-        item.id === productId && item.selectedCans === selectedCans
-          ? { ...item, quantity: item.quantity + 1 }
+        item.id === productId && item.strength === strength
+          ? { ...item, count: newQuantity }
           : item
-      )
+      ),
     })),
 
-  // Decrease quantity for a specific product variant, keeping minimum quantity as 1.
-  decreaseQuantity: (productId, selectedCans) =>
+  // Increase quantity for a specific product variant
+  increaseQuantity: (productId, strength) =>
     set((state) => ({
       cart: state.cart.map((item) =>
-        item.id === productId &&
-        item.selectedCans === selectedCans &&
-        item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
+        item.id === productId && item.strength === strength
+          ? { ...item, count: item.count + 1 }
           : item
-      )
-    }))
+      ),
+    })),
+
+  // Decrease quantity for a specific product variant, keeping minimum quantity as 1
+  decreaseQuantity: (productId, strength) =>
+    set((state) => ({
+      cart: state.cart.map((item) =>
+        item.id === productId && item.strength === strength && item.count > 1
+          ? { ...item, count: item.count - 1 }
+          : item
+      ),
+    })),
+
+  // Calculate total number of unique items in the cart
+  getTotalItems: () => {
+    const cart = get().cart;
+    return cart.length; // Count the number of unique items
+  },
 }));
 
 export default useCartStore;
