@@ -1,19 +1,13 @@
 export const STRAPI_URL = "https://pouchesworldwide.com/strapi/api";
 
-
-export async function sendJsonPostRequest(
-  url,
-  jsonBody = {},
-  headers = {},
-  useBaseUrl = true
-) {
+export async function sendJsonPostRequest(url, jsonBody = {}, headers = {}, useBaseUrl = true) {
   if (useBaseUrl) {
     url = STRAPI_URL + url;
   }
-  const headers_= headers;
-  // if (localStorage.getItem("auth-token")) {
-  //   headers_["Authorization"] = `Bearer ${localStorage.getItem("auth-token")}`;
-  // }
+  const headers_ = headers;
+  if (localStorage.getItem("token")) {
+    headers_["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
+  }
   headers_["Content-Type"] = "application/json";
 
   let response = null;
@@ -36,28 +30,23 @@ export async function sendJsonPostRequest(
   try {
     data_ = await response.json();
     return {
-      status: data_.status,
-      data: data_.data ?? data_.error,
-      message: data_.message ?? null,
+      status: "success",
+      data: data_ ?? null,
+      message: null,
     };
   } catch {
     return { status: "error", message: "Something went wrong.", data: null };
   }
 }
 
-export async function sendGetRequest(
-  url,
-  params = {},
-  headers = {},
-  useBaseUrl = true
-) {
+export async function sendGetRequest(url, params = {}, headers = {}, useBaseUrl = true) {
   if (useBaseUrl) {
     url = STRAPI_URL + url;
   }
   const headers_ = headers;
-  // if (localStorage.getItem("auth-token")) {
-  //   headers_["Authorization"] = `Bearer ${localStorage.getItem("auth-token")}`;
-  // }
+  if (localStorage.getItem("token")) {
+    headers_["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
+  }
   let response = null;
   try {
     if (params) url = url + "?" + new URLSearchParams(params);
@@ -79,30 +68,25 @@ export async function sendGetRequest(
     data_ = await response.json();
     return {
       status: "success",
-      data: data_.data ?? data_.error,
-      message: data_.message ?? null,
+      data: data_ ?? null,
+      message: null,
     };
   } catch {
     return { status: "error", message: "Something went wrong.", data: null };
   }
 }
 
-export async function sendDeleteRequest(
-  url,
-  jsonBody = {},
-  headers = {},
-  useBaseUrl = true
-) {
+export async function sendDeleteRequest(url, jsonBody = {}, headers = {}, useBaseUrl = true) {
   if (useBaseUrl) {
     url = STRAPI_URL + url;
   }
   const headers_ = headers;
-  // if (localStorage.getItem("auth-token")) {
-  //   headers_["Authorization"] = `Bearer ${localStorage.getItem("auth-token")}`;
-  // }
+  if (localStorage.getItem("token")) {
+    headers_["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
+  }
   headers_["Content-Type"] = "application/json";
 
-  let response= null;
+  let response = null;
   try {
     const body = {
       method: "DELETE",
@@ -125,27 +109,22 @@ export async function sendDeleteRequest(
     data_ = await response.json();
     return {
       status: "success",
-      data: data_.data ?? data_.error,
-      message: data_.message ?? null,
+      data: data_ ?? null,
+      message: null,
     };
   } catch {
     return { status: "error", message: "Something went wrong.", data: null };
   }
 }
 
-export async function sendJsonPatchRequest(
-  url,
-  jsonBody = {},
-  headers = {},
-  useBaseUrl = true
-) {
+export async function sendJsonPatchRequest(url, jsonBody = {}, headers = {}, useBaseUrl = true) {
   if (useBaseUrl) {
     url = STRAPI_URL + url;
   }
   const headers_ = headers;
-  // if (localStorage.getItem("auth-token")) {
-  //   headers_["Authorization"] = `Bearer ${localStorage.getItem("auth-token")}`;
-  // }
+  if (localStorage.getItem("token")) {
+    headers_["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
+  }
   headers_["Content-Type"] = "application/json";
 
   let response = null;
@@ -169,8 +148,8 @@ export async function sendJsonPatchRequest(
     data_ = await response.json();
     return {
       status: "success",
-      data: data_.data ?? data_.error,
-      message: data_.message ?? null,
+      data: data_ ?? null,
+      message: null,
     };
   } catch {
     return { status: "error", message: "Something went wrong.", data: null };
