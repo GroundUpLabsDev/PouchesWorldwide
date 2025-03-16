@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import SellerInfo from "@/components/AdminUi/SellerInfo";
-import { ArrowUpRight } from 'lucide-react'; 
+import { ArrowUpRight } from "lucide-react";
+import { sendGetRequest } from "@/_config/apiConfig";
 
 export default function ProfilePage({ userId }) {
   const [username, setUsername] = useState("");
@@ -11,12 +12,11 @@ export default function ProfilePage({ userId }) {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("https://pouchesworldwide.com/strapi/api/users?populate=profilePicture"); // Ensure profilePicture is populated
-        const users = await response.json();
+        const response = await sendGetRequest("/users/" + userId, {
+          populate: "profilePicture",
+        }); // Ensure profilePicture is populated
+        const user = response.data;
 
-        // Find the user by userId
-        const user = users.find((user) => user.id === Number(userId));
-        
         if (user) {
           setUsername(user.username);
           setProfilePicture(user.profilePicture?.url || ""); // Set the profile picture URL if available
@@ -49,7 +49,11 @@ export default function ProfilePage({ userId }) {
       <div className="flex justify-center mb-8">
         <img
           className="w-44 h-44 rounded-full border-8 border-[#e6af2e]"
-          src={profilePicture ? `https://pouchesworldwide.com/strapi${profilePicture}` : "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"} // Add local server path
+          src={
+            profilePicture
+              ? `https://pouchesworldwide.com/strapi${profilePicture}`
+              : "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
+          } // Add local server path
           alt="Profile"
         />
       </div>

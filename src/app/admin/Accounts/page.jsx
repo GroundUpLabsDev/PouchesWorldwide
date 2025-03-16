@@ -16,35 +16,34 @@ export default function AccountPage() {
       try {
         const response = await fetch("https://pouchesworldwide.com/strapi/api/users/");
         const data = await response.json();
-        
+
         // Filter only wholesaler users
-        const wholesalers = data.filter(user => user.urole === "wholesaler");
-  
+        const wholesalers = data.filter((user) => user.urole === "wholesaler");
+
         // Set status based on account.blocked or account.confirmed
         const updatedData = wholesalers.map((account) => {
           if (account.blocked) {
-            return { ...account, status: "Rejected" };  // Blocked users get 'Rejected' status
+            return { ...account, status: "Rejected" }; // Blocked users get 'Rejected' status
           }
           if (account.confirmed) {
-            return { ...account, status: "Approved" };  // Confirmed users get 'Approved' status
+            return { ...account, status: "Approved" }; // Confirmed users get 'Approved' status
           }
-          return { ...account, status: "Pending" };  // Default status is 'Pending'
+          return { ...account, status: "Pending" }; // Default status is 'Pending'
         });
-  
+
         setAccounts(updatedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
-  
+
     fetchData();
   }, []);
   // Empty dependency array to run only on component mount
 
   // Filtered accounts based on the selected filter
-  const filteredAccounts = filter === "All" 
-    ? accounts 
-    : accounts.filter(account => account.status === filter);
+  const filteredAccounts =
+    filter === "All" ? accounts : accounts.filter((account) => account.status === filter);
 
   // Calculate the count for each status
   const countByStatus = accounts.reduce((acc, account) => {
@@ -58,8 +57,7 @@ export default function AccountPage() {
 
   return (
     <>
-      <Header />
-    {/* <Banner />*/}
+      {/* <Banner />*/}
       <div className="flex flex-col items-center justify-center p-5 w-[1010px] mx-auto mt-12 mb-8">
         {/* Radio Button Filter - Enhanced with Circle Indicator */}
         <div className="flex justify-center space-x-8 mb-4">
@@ -106,8 +104,8 @@ export default function AccountPage() {
               <AccountCard
                 key={index}
                 id={account.id}
-                status={account.status}  // Sending status to AccountCard
-                {...account}  // Passing the rest of the account details
+                status={account.status} // Sending status to AccountCard
+                {...account} // Passing the rest of the account details
               />
             ))
           ) : (

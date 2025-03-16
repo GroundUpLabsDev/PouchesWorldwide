@@ -1,27 +1,30 @@
-'use client';
-import { useState, useEffect } from 'react';
+"use client";
+import { sendGetRequest } from "@/_config/apiConfig";
+import { useState, useEffect } from "react";
 
 const AddToInventory = ({ userId }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
 
   useEffect(() => {
     // Fetch products from API
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://pouchesworldwide.com/strapi/api/products'); // Replace with actual API endpoint
-        const data = await response.json();
-        setProducts(data.data.map(product => ({
-          id: product.id,
-          name: product.Name,
-          price: product.price,
-        })));
+        const response = await sendGetRequest("/api/products"); // Replace with actual API endpoint
+        const data = response.data;
+        setProducts(
+          data.data.map((product) => ({
+            id: product.id,
+            name: product.Name,
+            price: product.price,
+          }))
+        );
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
       }
     };
 
@@ -30,7 +33,7 @@ const AddToInventory = ({ userId }) => {
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = products.filter(product =>
+      const filtered = products.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredProducts(filtered);
@@ -47,7 +50,7 @@ const AddToInventory = ({ userId }) => {
   };
 
   const handleSaveProduct = () => {
-    console.log('Product Saved:', { selectedProduct, price, quantity });
+    console.log("Product Saved:", { selectedProduct, price, quantity });
     alert(`Product ${selectedProduct?.name} added with quantity ${quantity}`);
   };
 

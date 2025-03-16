@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import Distributers from "@/app/admin/distributers/page";
-import Retailers from "@/app/admin/retailers/page"; 
+import Distributers from "@/app/admin/distributers/Distributers";
+import Retailers from "@/app/admin/retailers/page";
 import Whalesellers from "@/app/admin/whalesellers/page";
 
 export default function DashboardTabs() {
@@ -17,11 +17,11 @@ export default function DashboardTabs() {
               key={tab}
               className={`px-6 py-2 w-full text-center focus:outline-none transition-all ${
                 activeTab === tab ? "bg-gray-800 text-white" : ""
-              } ${index < arr.length - 1 ? "border-r" : ""}`} 
+              } ${index < arr.length - 1 ? "border-r" : ""}`}
               onClick={() => setActiveTab(tab)}
-            > 
+            >
               {tab}
-            </button> 
+            </button>
           ))}
         </div>
 

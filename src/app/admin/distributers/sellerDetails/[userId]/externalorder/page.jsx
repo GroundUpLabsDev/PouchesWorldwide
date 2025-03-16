@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import EOrderCard from '@/components/EOrderCard';
+import { useEffect, useState } from "react";
+import EOrderCard from "@/components/EOrderCard";
 import { fetchProducts } from "@/app/utils/fetchProducts";
+import { sendGetRequest } from "@/_config/apiConfig";
 
 const External = ({ userId }) => {
   const [orders, setOrders] = useState([]);
@@ -12,7 +13,7 @@ const External = ({ userId }) => {
 
   useEffect(() => {
     if (!userId) {
-      setError('No user ID provided');
+      setError("No user ID provided");
       setLoading(false);
       return;
     }
@@ -23,21 +24,15 @@ const External = ({ userId }) => {
         setError(null); // Reset error state before fetching
 
         // Fetch orders
-        const ordersResponse = await fetch('https://pouchesworldwide.com/strapi/api/distributor-orders?populate=*');
-        
-        if (!ordersResponse.ok) {
-          throw new Error(`Failed to fetch orders: ${ordersResponse.statusText}`);
-        }
-        
-        const ordersData = await ordersResponse.json();
-        
+        const ordersResponse = await sendGetRequest("/distributor-orders", { populate: "*" });
+        const ordersData = ordersResponse.data;
+
         // Fetch products
         const products = await fetchProducts();
 
         // Fetch user data
-        const usersResponse = await fetch("https://pouchesworldwide.com/strapi/api/users");
-        const users = await usersResponse.json();
-        const user = users.find(user => user.id === Number(userId));
+        const usersResponse = await sendGetRequest("/users/" + userId);
+        const user = usersResponse.data;
 
         if (user) {
           setUsername(user.username);
@@ -47,17 +42,19 @@ const External = ({ userId }) => {
 
         // Ensure we have orders data
         if (!ordersData.data || !Array.isArray(ordersData.data)) {
-          throw new Error('Invalid orders data structure');
+          throw new Error("Invalid orders data structure");
         }
 
         // Filter and map orders based on userId
         const fetchedOrders = ordersData.data
-          .filter(order => order.user?.id === Number(userId))
-          .map(order => {
+          .filter((order) => order.user?.id === Number(userId))
+          .map((order) => {
             const productId = order.product?.id;
-            const productItem = products.find(prod => prod.id === productId);
-            const productImageUrl = productItem ? `https://pouchesworldwide.com/strapi${productItem.Image?.url}` : '';
-            
+            const productItem = products.find((prod) => prod.id === productId);
+            const productImageUrl = productItem
+              ? `https://pouchesworldwide.com/strapi${productItem.Image?.url}`
+              : "";
+
             return {
               productImageUrl,
               createdAt: new Date(order.createdAt).toLocaleDateString(),
@@ -73,8 +70,8 @@ const External = ({ userId }) => {
         setOrders(fetchedOrders);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setError(error.message || 'An error occurred while fetching data.');
+        console.error("Error fetching data:", error);
+        setError(error.message || "An error occurred while fetching data.");
         setLoading(false);
       }
     };
@@ -92,20 +89,20 @@ const External = ({ userId }) => {
 
   return (
     <div className="max-w-[900px] mx-auto">
-    <div className="h-[30px] px-2.5 py-[3px] bg-black flex items-center gap-2.5 mb-2 w-[200px]">
-<div className="text-white text-base font-normal font-['Poppins'] capitalize">
-distributor account
-</div>
-</div>
-    <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize mb-8">
-  <span className="text-black">{username} external orders</span> 
-  </h2>
-    <div className="flex flex-col items-center justify-center min-h-screen space-y-6">
-{orders.map((order, index) => (
-  <EOrderCard key={index} order={order} />
-))}
-</div>
-  </div>
+      <div className="h-[30px] px-2.5 py-[3px] bg-black flex items-center gap-2.5 mb-2 w-[200px]">
+        <div className="text-white text-base font-normal font-['Poppins'] capitalize">
+          distributor account
+        </div>
+      </div>
+      <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize mb-8">
+        <span className="text-black">{username} external orders</span>
+      </h2>
+      <div className="flex flex-col items-center justify-center min-h-screen space-y-6">
+        {orders.map((order, index) => (
+          <EOrderCard key={index} order={order} />
+        ))}
+      </div>
+    </div>
   );
 };
 
