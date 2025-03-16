@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import Banner from "../../../components/Banner";
+import { sendJsonPostRequest } from "@/_config/apiConfig";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -15,7 +16,7 @@ const LoginPage = () => {
   const [forgotPassword, setForgotPassword] = useState(false); // Track forgot password view
   const router = useRouter();
 
-  const [selectedRole, setSelectedRole] = useState('');
+  const [selectedRole, setSelectedRole] = useState("");
 
   // Function to handle role selection
   const handleRoleSelection = (role) => {
@@ -29,11 +30,11 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
+
     if (forgotPassword) {
       // Forgot Password logic here
       try {
-        const response = await axios.post("https://pouchesworldwide.com/strapi/api/auth/forgot-password", {
+        const response = await sendJsonPostRequest("/auth/forgot-password", {
           email: formData.email,
         });
 
@@ -46,10 +47,12 @@ const LoginPage = () => {
     } else {
       // Login logic here
       try {
-        const response = await axios.post("https://pouchesworldwide.com/strapi/api/auth/local", {
+        const response = await sendJsonPostRequest("/auth/local", {
           identifier: formData.email,
           password: formData.password,
         });
+
+        if (response.status == "error") throw new Error("Error occurred");
 
         const { jwt, user } = response.data;
 
@@ -71,8 +74,8 @@ const LoginPage = () => {
       <div className="absolute inset-0 bg-black -z-10"></div>
       <div className="bg-black text-white w-full max-w-screen-2xl mx-auto overflow-x-hidden box-border">
         <Header />
-        <div className="h-8"></div> 
-      {/* <Banner />*/}
+        <div className="h-8"></div>
+        {/* <Banner />*/}
 
         <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 p-8 ">
           <div className="bg-black p-8 rounded-lg shadow-lg max-w-[640px] w-full">
@@ -109,7 +112,7 @@ const LoginPage = () => {
                   required={!forgotPassword} // Disable password field if forgot password
                 />
               </div>
-              
+
               {forgotPassword ? (
                 <div className="flex justify-end">
                   <button
@@ -161,18 +164,20 @@ const LoginPage = () => {
                       id="retailer"
                       name="role"
                       className="hidden"
-                      checked={selectedRole === 'retailer'}
-                      onChange={() => handleRoleSelection('retailer')}
+                      checked={selectedRole === "retailer"}
+                      onChange={() => handleRoleSelection("retailer")}
                     />
                     <label
                       htmlFor="retailer"
                       className={`w-full p-3 border border-gray-300 rounded-lg cursor-pointer flex items-center justify-between ${
-                        selectedRole === 'retailer' ? 'bg-yellow-100' : ''
+                        selectedRole === "retailer" ? "bg-yellow-100" : ""
                       }`}
                     >
                       Retailer
                       <CheckCircle
-                        className={`w-5 h-5 ${selectedRole === 'retailer' ? 'text-yellow-500' : 'text-black'}`} 
+                        className={`w-5 h-5 ${
+                          selectedRole === "retailer" ? "text-yellow-500" : "text-black"
+                        }`}
                       />
                     </label>
                   </div>
@@ -183,31 +188,30 @@ const LoginPage = () => {
                       id="wholesaler"
                       name="role"
                       className="hidden"
-                      checked={selectedRole === 'wholesaler'}
-                      onChange={() => handleRoleSelection('wholesaler')}
+                      checked={selectedRole === "wholesaler"}
+                      onChange={() => handleRoleSelection("wholesaler")}
                     />
                     <label
                       htmlFor="wholesaler"
                       className={`w-full p-3 border border-gray-300 rounded-lg cursor-pointer flex items-center justify-between ${
-                        selectedRole === 'wholesaler' ? 'bg-yellow-100' : ''
+                        selectedRole === "wholesaler" ? "bg-yellow-100" : ""
                       }`}
                     >
                       Wholesaler
                       <CheckCircle
-                        className={`w-5 h-5 ${selectedRole === 'wholesaler' ? 'text-yellow-500' : 'text-black'}`} 
+                        className={`w-5 h-5 ${
+                          selectedRole === "wholesaler" ? "text-yellow-500" : "text-black"
+                        }`}
                       />
                     </label>
                   </div>
                 </div>
               </div>
               <Link href={`/auth/signup?role=${selectedRole}`}>
-                <button
-                  className="w-full bg-[radial-gradient(circle,_#fae255_0%,_#a06a0f_100%)] text-black font-normal py-3 rounded-lg flex items-center justify-center"
-                >
+                <button className="w-full bg-[radial-gradient(circle,_#fae255_0%,_#a06a0f_100%)] text-black font-normal py-3 rounded-lg flex items-center justify-center">
                   Signup <ArrowRight className="ml-2" size={28} />
                 </button>
               </Link>
-
             </form>
           </div>
         </div>
