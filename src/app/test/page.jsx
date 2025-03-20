@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-
 // Function to fetch all documentIds from the API
 async function fetchAllDocumentIds() {
     const apiUrl = 'https://pouchesworldwide.com/strapi/api/products?fields=id,documentId,Name&pagination[pageSize]=51';
