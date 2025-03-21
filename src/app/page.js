@@ -44,6 +44,8 @@ export default function Home() {
     }
   }, [router]); // Make sure to run this only when the router is ready
 
+
+  
   if (loading) {
     return <Preloader />; // Show preloader while loading
   }
