@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import OrderCard from "@/components/AdminUi/OrderCard";
 import { ListFilter } from "lucide-react";
+import { sendGetRequest } from "@/_config/apiConfig";
 
 export default function OrderPage({ userId }) {
   const orders = [
@@ -48,15 +49,15 @@ export default function OrderPage({ userId }) {
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   const [username, setUsername] = useState("");
 
-  useEffect(() => { 
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("https://pouchesworldwide.com/strapi/api/users");
-        const users = await response.json();
+        const response = await sendGetRequest("/api/users");
+        const users = response.data;
 
         // Find the user by userId
-        const user = users.find(user => user.id === Number(userId));
-        
+        const user = users.find((user) => user.id === Number(userId));
+
         if (user) {
           setUsername(user.username);
         } else {
@@ -77,46 +78,41 @@ export default function OrderPage({ userId }) {
   };
 
   // Filter orders based on selected status
-  const filteredOrders = selectedStatus === "ALL"
-    ? orders
-    : orders.filter((order) => order.status === selectedStatus);
+  const filteredOrders =
+    selectedStatus === "ALL" ? orders : orders.filter((order) => order.status === selectedStatus);
 
   return (
     <div className="max-w-[900px] mx-auto">
       {/* Header and filter dropdown container */}
       <div className="h-[30px] px-2.5 py-[3px] bg-black flex items-center gap-2.5 mb-2 w-[200px]">
-  <div className="text-white text-base font-normal font-['Poppins'] capitalize">
-  distributor account
-  </div>
-</div>
+        <div className="text-white text-base font-normal font-['Poppins'] capitalize">
+          distributor account
+        </div>
+      </div>
       <div className="flex items-center justify-between mb-8">
-        
         <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize">
           <span className="text-black">{username}'s Admin Orders</span>
         </h2>
         {/* Filter Dropdown */}
-<div className="ml-4 flex items-center gap-2">
-  <ListFilter />
-  <span>Filter By</span>
-  <select
-    value={selectedStatus}
-    onChange={handleStatusChange}
-    className="select select-bordered select-md w-auto"
-  >
-    <option value="ALL">All</option>
-    <option value="ASSIGNED">Assigned</option>
-    <option value="PROCESSING">Processing</option>
-    <option value="COMPLETED">Completed</option>
-  </select>
-</div>
-
+        <div className="ml-4 flex items-center gap-2">
+          <ListFilter />
+          <span>Filter By</span>
+          <select
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            className="select select-bordered select-md w-auto"
+          >
+            <option value="ALL">All</option>
+            <option value="ASSIGNED">Assigned</option>
+            <option value="PROCESSING">Processing</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+        </div>
       </div>
 
       <div className="flex flex-col items-center min-h-screen space-y-6">
         {filteredOrders.length > 0 ? (
-          filteredOrders.map((order, index) => (
-            <OrderCard key={index} order={order} />
-          ))
+          filteredOrders.map((order, index) => <OrderCard key={index} order={order} />)
         ) : (
           <p>No orders found for this status</p>
         )}

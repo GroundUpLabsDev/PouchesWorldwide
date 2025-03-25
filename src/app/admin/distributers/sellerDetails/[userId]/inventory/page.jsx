@@ -3,24 +3,24 @@
 import { useEffect, useState } from "react";
 import Inventory from "@/components/AdminUi/Inventory";
 import New from "./new/page";
+import { sendGetRequest } from "@/_config/apiConfig";
 
 export default function InventoryPage({ userId }) {
   const [username, setUsername] = useState("");
   const [showNewInventory, setShowNewInventory] = useState(false);
-  
 
-  useEffect(() => { 
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("https://pouchesworldwide.com/strapi/api/users");
-        const users = await response.json();
+        const response = await sendGetRequest("/users");
+        const users = response.data;
 
         // Find the user by userId
-        const user = users.find(user => user.id === Number(userId));
-        
+        const user = users.find((user) => user.id === Number(userId));
+
         if (user) {
           setUsername(user.username);
-        } else { 
+        } else {
           setUsername("Unknown User");
         }
       } catch (error) {
@@ -47,7 +47,7 @@ export default function InventoryPage({ userId }) {
             </div>
           </div>
           <h2 className="text-[#fab12f] text-[32px] font-semibold font-['Poppins'] text-left capitalize mb-8">
-            <span className="text-black">{username}'s inventory</span> 
+            <span className="text-black">{username}'s inventory</span>
           </h2>
         </>
       )}
@@ -58,9 +58,9 @@ export default function InventoryPage({ userId }) {
           type="submit"
           className="hover:bg-yellow-600 text-black py-2 px-4 rounded-md flex items-center justify-center space-x-2 h-[60px] w-[210px]"
           style={{
-            borderRadius: '5px',
+            borderRadius: "5px",
             background:
-              'var(--gold-gradient, linear-gradient(113deg, #F5D061 -0.67%, #E6AF2E 99.33%))',
+              "var(--gold-gradient, linear-gradient(113deg, #F5D061 -0.67%, #E6AF2E 99.33%))",
           }}
           onClick={handleAddNewInventory}
         >

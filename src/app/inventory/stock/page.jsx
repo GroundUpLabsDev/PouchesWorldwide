@@ -5,9 +5,10 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import StockTable from "@/components/StockTable";
+import CreateOrder from "./create-order";
 
 // Dynamically import CreateOrder page
-const CreateOrder = dynamic(() => import("./create-order"), { ssr: false });
+// const CreateOrder = dynamic(() => import("./create-order"), { ssr: false });
 
 export default function StockPage() {
   const [showCreateOrder, setShowCreateOrder] = useState(false);
