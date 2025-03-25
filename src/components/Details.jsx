@@ -65,8 +65,6 @@ const Details = () => {
     fetchUsers();
   }, []);
 
-  
-
   // Find the order with the matching ID and set its email
   const selectedOrder = orders.find((order) => String(order.id) === orderId);
   useEffect(() => {

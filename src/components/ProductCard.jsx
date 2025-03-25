@@ -6,11 +6,10 @@ import useCartStore from "@/store/cartStore";
 import { getUserRole } from "@/app/utils/getUserRole";
 
 const ProductCard = ({ product }) => {
-  const { id, Name, Stock, Description, category, Image, rating, Selector, documentId } = product;
+  const { id, Name, Stock, Description, category, Image, rating, documentId } = product;
   const [userRole, setUserRole] = useState(null);
   const [username, setUsername] = useState(null);
   const [userId, setUserId] = useState(null); // Store user ID
-  const [customPrices, setCustomPrices] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -18,13 +17,6 @@ const ProductCard = ({ product }) => {
   const fullImageUrl = `https://pouchesworldwide.com/strapi${imageUrl}`;
 
   const addToCart = useCartStore((state) => state.addToCart);
-
-  // Sort Selector by Position
-  const sortedSelector = Selector ? [...Selector].sort((a, b) => a.Position - b.Position) : [];
-  const defaultSelection = sortedSelector.length > 0 ? sortedSelector[0] : { Cans: 0, Price: 0 };
-
-  const [selectedCans, setSelectedCans] = useState(defaultSelection.Cans);
-  const [currentPrice, setCurrentPrice] = useState(defaultSelection.Price);
 
   // State for selected quantities (mg) and their counts
   const [selectedQuantities, setSelectedQuantities] = useState([]);
@@ -47,81 +39,6 @@ const ProductCard = ({ product }) => {
       }
     }
   }, []);
-
-  const handleQuantityChange = (event) => {
-    const selectedValue = parseInt(event.target.value);
-    setSelectedCans(selectedValue);
-
-    // Determine which prices to use (custom or default)
-    const pricesToUse = customPrices || sortedSelector;
-
-    // Find the selected price based on the selected quantity
-    const selectedOption = pricesToUse.find((item) => item.Cans === selectedValue);
-    setCurrentPrice(selectedOption ? selectedOption.Price : 0);
-  };
-
-  const fetchCustomPrices = async (userId) => {
-    if (!userId) return;
-
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `https://pouchesworldwide.com/strapi/api/products/${documentId}?populate[0]=wprice&populate[1]=wprice.user&populate[2]=wprice.price`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-
-      // Find the user's custom prices
-      const userProduct = data.data.wprice.find((wp) => wp.user.id === userId);
-
-      if (userProduct) {
-        // Check if custom prices are valid (not empty or null)
-        if (userProduct.price && userProduct.price.length > 0 && userProduct.price[0].Price !== null) {
-          setCustomPrices(userProduct.price); // Set custom prices if valid
-
-          // Automatically select the first option from custom prices
-          setSelectedCans(userProduct.price[0].Cans);
-          setCurrentPrice(userProduct.price[0].Price);
-        } else {
-          // Fallback to default pricing if custom prices are invalid
-          setCustomPrices(null);
-          if (sortedSelector.length > 0) {
-            setSelectedCans(sortedSelector[0].Cans);
-            setCurrentPrice(sortedSelector[0].Price);
-          }
-        }
-      } else {
-        // No custom prices for this user, fallback to default pricing
-        setCustomPrices(null);
-        if (sortedSelector.length > 0) {
-          setSelectedCans(sortedSelector[0].Cans);
-          setCurrentPrice(sortedSelector[0].Price);
-        }
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (userId) {
-      fetchCustomPrices(userId); // Fetch custom prices when userId changes
-    }
-  }, [userId]);
-
-  // Determine which prices to use (custom or default)
-  const pricesToUse = customPrices || sortedSelector;
-
-  // Update currentPrice when customPrices or selectedCans changes
-  useEffect(() => {
-    const selectedOption = pricesToUse.find((item) => item.Cans === selectedCans);
-    setCurrentPrice(selectedOption ? selectedOption.Price : 0);
-  }, [customPrices, selectedCans, pricesToUse]);
 
   // Handle quantity button click
   const handleQuantityClick = (mg) => {
@@ -201,19 +118,19 @@ const ProductCard = ({ product }) => {
       setError("Please select at least one strength.");
       return;
     }
-  
+
     // Create separate orders for each selected strength
     selectedQuantities.forEach((item) => {
       const order = {
         ...product, // Spread the product details
-        price: currentPrice, // Use the current price
+        price: product.price, // Use the product's base price
         strength: item.mg, // Strength (e.g., 6mg, 22mg)
         count: item.count, // Quantity selected for this strength
         imageUrl: fullImageUrl, // Full image URL
       };
       addToCart(order); // Add each order to the cart
     });
-  
+
     // Reset selected quantities after adding to cart
     setSelectedQuantities([]);
   };
@@ -276,7 +193,7 @@ const ProductCard = ({ product }) => {
             {/* Product Details */}
             <div className="flex justify-between items-center mt-4">
               <span className="text-xl font-semibold">Price Per Unit</span>
-              <span className="text-xl font-semibold">${currentPrice.toFixed(2)}</span>
+              <span className="text-xl font-semibold">${product.price.toFixed(2)}</span>
             </div>
 
             {/* Quantity Buttons */}
@@ -291,7 +208,7 @@ const ProductCard = ({ product }) => {
                         onClick={() => handleQuantityClick(mg)}
                         className={`btn-sm rounded-lg w-[75px] h-[5px] ${
                           selectedItem
-                            ? "bg-[#54a9d1] text-white text-bold"
+                            ? "bg-black text-white text-bold"
                             : "bg-gray-300"
                         } border-none text-base `}
                       >
@@ -329,7 +246,7 @@ const ProductCard = ({ product }) => {
                         onClick={() => handleQuantityClick(mg)}
                         className={`btn-sm rounded-lg w-[250px] ${
                           selectedItem
-                            ? "bg-[#54a9d1] text-white text-bold"
+                            ? "bg-black text-white text-bold"
                             : "bg-gray-300"
                         } border-none text-sm  px-3 py-2`}
                       >

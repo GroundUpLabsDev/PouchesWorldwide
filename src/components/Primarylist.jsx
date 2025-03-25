@@ -1,22 +1,30 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import ProductCard from "./ProductCard";
-import { fetchProducts } from "@/app/utils/fetchProducts"; // Import the fetchProducts function
+import ProductCard from "./C_ProductCard";
+import { fetchAllProducts } from "@/app/utils/product"; // Import the utility function
 
 const PrimaryList = () => {
   const [activeTab, setActiveTab] = useState("new");
-  const [products, setProducts] = useState([]); // State to store fetched products
-
-  // Fetch products when the component mounts
-  useEffect(() => {
-    const getProducts = async () => {
-      const fetchedProducts = await fetchProducts();
-      setProducts(fetchedProducts); 
-    };
-
-    getProducts();
-  }, []); // Empty dependency array means this effect runs only once
+   const [products, setProducts] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState(null);
+ 
+   // Fetch data from the API
+   useEffect(() => {
+     const fetchProducts = async () => {
+       try {
+         const productsData = await fetchAllProducts(); // Use the utility function
+         setProducts(productsData); // Set the fetched products
+         setLoading(false);
+       } catch (error) {
+         setError(error.message);
+         setLoading(false);
+       }
+     };
+ 
+     fetchProducts();
+   }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -46,7 +54,7 @@ const PrimaryList = () => {
       {activeTab === "new" && (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 justify-items-center">
       {products
-        .filter((product) => product.position === "New") // Filter only "New" products
+       // .filter((product) => product.position === "New") // Filter only "New" products
         .slice(0, 8)
         .map((product) => (
           <div key={product.id} className="w-full max-w-sm flex justify-center">
@@ -59,7 +67,7 @@ const PrimaryList = () => {
         {activeTab === "best" && (
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 justify-items-center">
          {products
-          .filter((product) => product.position === "Best")
+        //  .filter((product) => product.position === "Best")
          .slice(0, 8).map((product) => (
            <div key={product.id} className="w-full max-w-sm flex justify-center"> {/* Center ProductCard on small screens */}
              <ProductCard product={product} />
